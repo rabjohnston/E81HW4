@@ -87,3 +87,15 @@ ENV/
 
 # Rope project settings
 .ropeproject
+rob/cifar-10-batches-py/batches.meta
+rob/cifar-10-batches-py/data_batch_1
+rob/cifar-10-batches-py/data_batch_2
+rob/cifar-10-batches-py/data_batch_3
+rob/cifar-10-batches-py/data_batch_4
+rob/cifar-10-batches-py/data_batch_5
+rob/cifar-10-batches-py/readme.html
+rob/cifar-10-batches-py/test_batch
+rob/.idea/misc.xml
+rob/.idea/modules.xml
+rob/.idea/rob.iml
+rob/.idea/workspace.xml
