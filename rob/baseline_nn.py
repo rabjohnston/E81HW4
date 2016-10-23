@@ -137,7 +137,7 @@ def main():
 
     start = time.time()
     b.run_session(10000, "NN")
-    print("Completed in {} minutes".format((time.time()-start)/60))
+    print("Completed in {} minutes".format(round((time.time()-start)/60, 2)))
     # Visualise the data for one image
     #d.display(40000)
 
