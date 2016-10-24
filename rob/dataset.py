@@ -17,8 +17,8 @@ class DataSet():
         self.test_labels = None
         self.train_labels = None
 
-        self._image_size = 32
-        self._num_channels = 3
+        self.image_size = 32
+        self.num_channels = 3
 
     def unpickle(self, file):
         fo = open(file, 'rb')
@@ -27,7 +27,7 @@ class DataSet():
         return dict
 
     def to_image(self, X):
-        return X.reshape((X.shape[0], 3, 32, 32)).transpose(0, 2, 3, 1)
+        return X.reshape((X.shape[0], self.num_channels, self.image_size, self.image_size)).transpose(0, 2, 3, 1)
 
     def load(self, flatten=True):
         # Load data files
@@ -45,14 +45,23 @@ class DataSet():
         # Convert to image (for visualisation purposes)
         self.image = self.to_image(self.data)
 
-        # Normalise
-        self.data = normalize(self.data, axis=0)
 
-        # Reformat
+
+
         if flatten:
-            self.data = self.data.reshape((-1, self._image_size * self._image_size * self._num_channels)).astype(np.float32)
+            # Reformat
+            self.data = self.data.reshape((-1, self.image_size * self.image_size * self.num_channels)).astype(np.float32)
+
+            # Normalise
+            self.data = normalize(self.data, axis=0)
         else:
-            self.data = self.data.reshape((-1, self._image_size, self._image_size, self._num_channels)).astype(np.float32)
+            # Normalise
+            self.data = normalize(self.data, axis=0)
+
+            # Reformat
+            self.data = self.data.reshape((-1, self.image_size, self.image_size, self.num_channels)).astype(np.float32)
+
+
 
         # Concatenate labels
         labels = np.hstack([b1[b'labels'], b2[b'labels'], b3[b'labels'], b4[b'labels'], b5[b'labels']])

@@ -7,10 +7,16 @@ from baseline_cnn import Baseline_cnn
 
 def main():
     d = DataSet()
-    d.load(False)
 
-    b = Baseline_cnn(d)
+    # Baseline Neural Network
+    d.load()
+    b = Baseline_nn(d)
     b.create()
+
+    # Baseline Neural Network
+    #d.load(False)
+    #b = Baseline_cnn(d)
+    #b.create()
 
     start = time.time()
     b.run_session(100000, "NN")

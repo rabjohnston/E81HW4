@@ -38,7 +38,7 @@ class Baseline_nn(Baseline):
 
         split_by_half = lambda x, k: int(x / 2 ** k)
 
-        input_layer_size = 32 * 32 * 3
+        input_layer_size = self._ds.image_size * self._ds.image_size * self._ds.num_channels
         output_layer_size = 10
 
         self.graph = tf.Graph()
