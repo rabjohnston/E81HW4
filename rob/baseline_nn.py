@@ -19,7 +19,7 @@ from baseline import Baseline
 class Baseline_nn(Baseline):
 
     def __init__(self, ds):
-        Baseline.__init__(self,ds)
+        Baseline.__init__(self,ds,'NN')
 
 
     def weight_variable(self, shape):

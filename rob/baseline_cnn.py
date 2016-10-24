@@ -6,7 +6,7 @@ from baseline import Baseline
 class Baseline_cnn(Baseline):
 
     def __init__(self, ds):
-        Baseline.__init__(self,ds)
+        Baseline.__init__(self,ds, 'CNN')
 
     def weight_variable(self, shape):
         initial = tf.truncated_normal(shape, stddev=0.01)

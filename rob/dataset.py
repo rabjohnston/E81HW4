@@ -1,5 +1,6 @@
 import numpy as np
-from six.moves import cPickle as pickle
+import pickle
+#from six.moves import cPickle as pickle
 from sklearn.cross_validation import train_test_split
 from sklearn.preprocessing import normalize
 
@@ -77,13 +78,9 @@ class DataSet():
         self.label_name = meta[b'label_names']
 
 
-
-
-
-
         self.train_dataset, self.test_dataset, self.train_labels, self.test_labels = train_test_split(self.data, self.labels, test_size=.33, random_state=10)
 
-        #print(test[b'label_names'])
+
 
 
     def display(self, id):
