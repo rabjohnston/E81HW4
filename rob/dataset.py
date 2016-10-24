@@ -29,7 +29,7 @@ class DataSet():
     def to_image(self, X):
         return X.reshape((X.shape[0], 3, 32, 32)).transpose(0, 2, 3, 1)
 
-    def load(self):
+    def load(self, flatten=True):
         # Load data files
         b1 = self.unpickle('cifar-10-batches-py/data_batch_1')
         b2 = self.unpickle('cifar-10-batches-py/data_batch_1')
@@ -45,8 +45,14 @@ class DataSet():
         # Convert to image (for visualisation purposes)
         self.image = self.to_image(self.data)
 
+        # Normalise
+        self.data = normalize(self.data, axis=0)
+
         # Reformat
-        self.data = self.data.reshape((-1, self._image_size * self._image_size * self._num_channels)).astype(np.float32)
+        if flatten:
+            self.data = self.data.reshape((-1, self._image_size * self._image_size * self._num_channels)).astype(np.float32)
+        else:
+            self.data = self.data.reshape((-1, self._image_size, self._image_size, self._num_channels)).astype(np.float32)
 
         # Concatenate labels
         labels = np.hstack([b1[b'labels'], b2[b'labels'], b3[b'labels'], b4[b'labels'], b5[b'labels']])
@@ -64,7 +70,7 @@ class DataSet():
 
 
 
-        self.data = normalize(self.data, axis=0)
+
 
         self.train_dataset, self.test_dataset, self.train_labels, self.test_labels = train_test_split(self.data, self.labels, test_size=.33, random_state=10)
 
