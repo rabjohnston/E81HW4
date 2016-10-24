@@ -32,10 +32,10 @@ class DataSet():
     def load(self, flatten=True):
         # Load data files
         b1 = self.unpickle('cifar-10-batches-py/data_batch_1')
-        b2 = self.unpickle('cifar-10-batches-py/data_batch_1')
-        b3 = self.unpickle('cifar-10-batches-py/data_batch_1')
-        b4 = self.unpickle('cifar-10-batches-py/data_batch_1')
-        b5 = self.unpickle('cifar-10-batches-py/data_batch_1')
+        b2 = self.unpickle('cifar-10-batches-py/data_batch_2')
+        b3 = self.unpickle('cifar-10-batches-py/data_batch_3')
+        b4 = self.unpickle('cifar-10-batches-py/data_batch_4')
+        b5 = self.unpickle('cifar-10-batches-py/data_batch_5')
 
         print(b1[b'data'])
 
