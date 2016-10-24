@@ -9,7 +9,7 @@ class Baseline:
 
     def __init__(self, ds, name):
         self._ds = ds
-        self._name = name
+        self.name = name
 
         self._batch_size = 0
         self.tf_train_dataset = None
@@ -48,5 +48,5 @@ class Baseline:
                     print("Minibatch loss at epoch {}: {}".format(epoch, l))
                     print("Minibatch accuracy: {:.1f}".format(self.accuracy(predictions, batch_labels)))
                     #print("Validation accuracy: {:.1f}".format(self.accuracy(self.valid_prediction.eval(), self.valid_labels)))
-            print("Test accuracy: {:.1f}".format(self.accuracy(self.test_prediction.eval(), self._ds.test_labels)))
+            print("Test accuracy ({}): {:.1f}".format(self.name, self.accuracy(self.test_prediction.eval(), self._ds.test_labels)))
             self.test_preds = self.test_prediction.eval().ravel()
