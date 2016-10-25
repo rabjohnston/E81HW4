@@ -77,17 +77,15 @@ class DataSet():
         b4 = self.unpickle('cifar-10-batches-py/data_batch_4')
         b5 = self.unpickle('cifar-10-batches-py/data_batch_5')
 
-        print(b1[b'data'])
-
         # Concatenate data
         self.data = np.vstack([b1[b'data'], b2[b'data'], b3[b'data'], b4[b'data'], b5[b'data']]).astype(np.float32)
 
         # Convert to image (for visualisation purposes)
         self.image = self.to_image(self.data)
 
-        #Don't forget to convert (normalize) the image data to floats between 0 and 1 by dividing by 255.0
+        #Don't forget to convert (normalize) the image data to floats between 0 and 1 by dividing by 255.0 - Dave's comment
 
-        # Normalise
+        # Normalise - possibly not right.
         self.data = normalize(self.data, axis=0, norm=norm)
 
         # Reformat the data. We either flatten it (useful for NN) or reshape it into a 3D structure (for CNNs)
@@ -99,7 +97,6 @@ class DataSet():
 
         # Concatenate labels
         labels = np.hstack([b1[b'labels'], b2[b'labels'], b3[b'labels'], b4[b'labels'], b5[b'labels']])
-        print('Labels: ', labels.shape)
 
         # Reformat labels
         num_labels = 10

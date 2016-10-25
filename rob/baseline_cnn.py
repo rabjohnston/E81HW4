@@ -25,8 +25,10 @@ class Baseline_cnn(Baseline):
                      pooling_ksize = [1, 2, 2, 1],
                      pooling_strides = [1, 2, 2, 1]):
 
-        print('Parameters: batch_size: {}, patch_size: {}, depth1: {}, depth2: {}, num_hidden: {}, pooling_ksize: {}, pooling_strides: {}'
-              .format(batch_size, patch_size, depth1, depth2, num_hidden, pooling_ksize, pooling_strides))
+
+        self.params = {'batch_size': batch_size, 'patch_size': patch_size, 'depth1': depth1, 'depth2': depth2,
+                       'num_hidden': num_hidden, 'pooling_ksize': pooling_ksize, 'pooling_strides': pooling_strides }
+        print('Parameters: ', self.params);
 
         image_size = 32
         num_labels = 10

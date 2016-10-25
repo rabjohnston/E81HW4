@@ -1,5 +1,7 @@
 
 import time
+import datetime
+import numpy as np
 import pickle
 #import matplotlib.pyplot as plt
 from dataset import DataSet
@@ -27,35 +29,57 @@ from baseline_cnn import Baseline_cnn
 #     plt.show()
 
 
-def run(model, num_epochs=50000):
+def run(model, iteration, num_epochs=50000):
 
     start = time.time()
 
     model.run_session(num_epochs)
-    #pickle.dump(model, open( "{}.p".format(model.name), "wb" ))
 
-    print("Completed in {} minutes".format(round((time.time( ) -start ) /60, 2)))
+    timeCompleted = round((time.time( ) -start ) /60, 2)
+    print("Completed in {} minutes".format(timeCompleted))
 
-def searchForNNParams(ds, num_epochs=50000):
+    # Save
+    base_filename = 'saved_{}_{:03d}'.format(model.name, iteration)
+
+    print(base_filename)
+
+    np.save('{}.preds'.format(base_filename), model.test_preds)
+    pickle.dump(model.params, open('{}.params'.format(base_filename), 'wb'))
+
+
+def searchForNNParams(ds, num_epochs=30000):
+
+    # Define Hyper-parameters
     batch_sizes = { 64, 128, 256 }
     hidden_nodes = {512, 1024, 2048, 4096}
     lamb_regs = {0.005, 0.01, 0.05}
 
+    iteration = 0
+
+    # Perform a Grid Search on all hyper-parameters
     for batch_size in batch_sizes:
         for hidden_node in hidden_nodes:
             for lamb_reg in lamb_regs:
                 nn = Baseline_nn(ds)
                 nn.create(batch_size=batch_size, hidden_nodes=hidden_node, lamb_reg=lamb_reg)
-                run(nn, num_epochs)
+                run(nn, iteration, num_epochs)
+                nn = None
+                iteration += 1
 
-def searchForCNNParams(ds, num_epochs=50000):
 
+def searchForCNNParams(ds, num_epochs=30000):
+    # Define Hyper-parameters
     batch_sizes = { 8, 16, 32, 64 }
     patch_sizes = { 5, 6, 8, 10, 12 }
-    depth1s = { 32, 64, 128 }
-    depth2s = { 64, 128, 256 }
-    num_hiddens = { 1024, 2048, 3072, 4096 }
 
+    # This seriously chews up memory
+    depth1s = { 32, 64 }
+    depth2s = { 64, 128 }
+    num_hiddens = { 1024, 2048 }
+
+    iteration = 0
+
+    # Perform a Grid Search on all hyper-parameters
     for batch_size in batch_sizes:
         for patch_size in patch_sizes:
             for depth1 in depth1s:
@@ -67,35 +91,46 @@ def searchForCNNParams(ds, num_epochs=50000):
                                    depth1=depth1,
                                    depth2=depth2,
                                    num_hidden=num_hidden)
-                        run(cnn, num_epochs)
+                        run(cnn, iteration, num_epochs)
+                        cnn = None
+                        iteration += 1
 
 
-def main():
+def runNNs():
     flatDataSet = DataSet()
     flatDataSet.load()
-
-    shapedDataSet = DataSet()
-    shapedDataSet.load(False)
 
     # Baseline Neural Network
     #nn = Baseline_nn(flatDataSet)
     #nn.create()
-    #run(nn)
+    #run(nn, 0, num_epochs=50000)
 
     # Search for parameters
-    searchForNNParams(flatDataSet, 1)
+    searchForNNParams(flatDataSet)
+
+
+def runCNNs():
+
+    shapedDataSet = DataSet()
+    shapedDataSet.load(False)
 
     # Baseline CNN
     #cnn = Baseline_cnn(shapedDataSet)
     #cnn.create()
-    #run(cnn)
+    #run(cnn, 0, num_epochs=1)
 
     # Search for parameters
-    searchForCNNParams(shapedDataSet, 1)
+    searchForCNNParams(shapedDataSet, num_epochs=50000)
 
 
+
+def main():
     # Visualise the data for one image
     # d.display(40000)
+
+    runNNs()
+
+    #runCNNs()
 
     print('Finished')
 

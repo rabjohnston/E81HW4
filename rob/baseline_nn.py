@@ -17,7 +17,9 @@ from baseline import Baseline
 
 
 class Baseline_nn(Baseline):
-
+    """
+    Basic three layer NN with ability to tune a number of hyper-parameters
+    """
     def __init__(self, ds):
         Baseline.__init__(self,ds,'NN')
 
@@ -33,6 +35,11 @@ class Baseline_nn(Baseline):
         return tf.Variable(initial)
 
     def create(self, batch_size = 256, hidden_nodes = 1024, lamb_reg=0.01, start_learning_rate = 0.5):
+
+        # Save the hyper params for later
+        self.params = {'batch_size':batch_size, 'hidden_nodes':hidden_nodes, 'lamb_reg':lamb_reg,
+                       'start_learning_rate':start_learning_rate }
+        print('Parameters: ', self.params);
 
         self._batch_size = batch_size
 
