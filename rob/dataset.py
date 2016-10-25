@@ -1,36 +1,75 @@
 import numpy as np
+
 import pickle
-#from six.moves import cPickle as pickle
 from sklearn.cross_validation import train_test_split
 from sklearn.preprocessing import normalize
 
 class DataSet():
+    """
+    Wrapper to hold the 60,000 cifar-10 images
+    """
 
     def __init__(self):
-        self.label_name = None
-        self.data = None
-        self.labels = None
-        self.image = None
 
+        # The name of the labels, e.g. cat, car
+        self.label_name = None
+
+        # The image data (X)
+        self.data = None
+
+        # The image data that we've split off for training
         self.test_dataset =None
+
+        # The image data that we've split off for testing
         self.train_dataset = None
 
-        self.test_labels = None
+        # The image data in a form that we can display as an image (for debug purposes)
+        self.image = None
+
+        # The image labels (Y)
+        self.labels = None
+
+        # The image data that we've split off for training
         self.train_labels = None
 
+        # The image labels that we've split off for training
+        self.test_labels = None
+
+        # The image size (32 x 32)
         self.image_size = 32
+
+        # The number of channels (RGB = 3)
         self.num_channels = 3
 
+
     def unpickle(self, file):
+        """
+        Unpickle one of the cifar-10 batch files
+        :param file: the filename of a batch file
+        :return: a dictionary of image rows
+        """
         fo = open(file, 'rb')
         dict = pickle.load(fo, encoding='bytes')
         fo.close()
         return dict
 
+
     def to_image(self, X):
+        """
+        Reshape the supplied data to a format that we can use to display images
+        :param X: the dataset to reformat
+        :return: the reformatted dataset
+        """
         return X.reshape((X.shape[0], self.num_channels, self.image_size, self.image_size)).transpose(0, 2, 3, 1)
 
+
     def load(self, flatten=True, norm='l2'):
+        """
+        Load all of the cifar-10 data.
+        :param flatten: determines whether we flatten the data or reshape it as a 3D structure
+        :param norm: 'l1', 'l2', or 'max', optional ('l2' by default). Used to normalise the data
+        :return: Nothing
+        """
         # Load data files
         b1 = self.unpickle('cifar-10-batches-py/data_batch_1')
         b2 = self.unpickle('cifar-10-batches-py/data_batch_2')
@@ -51,19 +90,11 @@ class DataSet():
         # Normalise
         self.data = normalize(self.data, axis=0, norm=norm)
 
+        # Reformat the data. We either flatten it (useful for NN) or reshape it into a 3D structure (for CNNs)
         if flatten:
-            # Reformat
             self.data = self.data.reshape((-1, self.image_size * self.image_size * self.num_channels)).astype(np.float32)
-
-            # Normalise
-            #self.data = normalize(self.data, axis=0)
         else:
-            # Normalise
-            #self.data = normalize(self.data, axis=0)
-
-            # Reformat
             self.data = self.data.reshape((-1, self.image_size, self.image_size, self.num_channels)).astype(np.float32)
-
 
 
         # Concatenate labels
@@ -73,21 +104,31 @@ class DataSet():
         # Reformat labels
         num_labels = 10
         self.labels = (np.arange(num_labels) == labels[:, None]).astype(np.float32)
-        print('Labels (2): ', self.labels.shape)
 
         # Pull out the names of the labels
         meta = self.unpickle('cifar-10-batches-py/batches.meta')
         self.label_name = meta[b'label_names']
 
-
-        self.train_dataset, self.test_dataset, self.train_labels, self.test_labels = train_test_split(self.data, self.labels, test_size=.33, random_state=10)
+        # Split the data into test and training data
+        self.train_dataset, self.test_dataset, self.train_labels, self.test_labels = \
+            train_test_split(self.data, self.labels, test_size=.33, random_state=10)
 
 
 
 
     def display(self, id):
-        print('Display')
+        """
+        Helper function to display an image. Useful to visualise the data
+        :param id: the id in the array of images.
+        :return: Nothing
+        """
+
+        # I import this here as my linux environemnt doesn't have matplotlib
         import matplotlib.pyplot as plt
+
+        if id < 0 or id > len(self.data):
+            raise RuntimeError('id of image out of range.')
+
         plt.imshow(self.image[id])
         plt.title(self.label_name[self.labels[id]])
         plt.show()
