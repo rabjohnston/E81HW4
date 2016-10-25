@@ -14,6 +14,9 @@ class Baseline:
         self._batch_size = 0
         self.tf_train_dataset = None
         self.tf_train_labels = None
+
+        self.tf_test_dataset = None
+
         self.tf_keep_prob = None
 
         self.train_prediction = None
@@ -24,13 +27,15 @@ class Baseline:
 
         self.test_preds = None
 
+        self.graph = None
+
     def accuracy(self, predictions, labels):
         return (100.0 * np.sum(np.argmax(predictions, 1) == np.argmax(labels, 1))
                     / predictions.shape[0])
 
     def run_session(self, num_epochs, k_prob=1.0):
 
-        with tf.Session(graph= self.graph) as session:
+        with tf.Session(graph = self.graph) as session:
 
             merged = tf.merge_all_summaries()
             writer = tf.train.SummaryWriter("/tmp/tensorflowlogs", session.graph)

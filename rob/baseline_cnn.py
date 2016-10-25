@@ -21,7 +21,12 @@ class Baseline_cnn(Baseline):
                      patch_size = 5,
                      depth1 = 32,
                      depth2 = 64,
-                     num_hidden = 1024 ):
+                     num_hidden = 1024,
+                     pooling_ksize = [1, 2, 2, 1],
+                     pooling_strides = [1, 2, 2, 1]):
+
+        print('Parameters: batch_size: {}, patch_size: {}, depth1: {}, depth2: {}, num_hidden: {}, pooling_ksize: {}, pooling_strides: {}'
+              .format(batch_size, patch_size, depth1, depth2, num_hidden, pooling_ksize, pooling_strides))
 
         image_size = 32
         num_labels = 10
@@ -53,12 +58,12 @@ class Baseline_cnn(Baseline):
             def model(data, proba):
                 # Convolution
                 conv1 = tf.nn.conv2d(data, layer1_weights, [1, 1, 1, 1], padding='SAME') + layer1_biases
-                pooled1 = tf.nn.max_pool(tf.nn.relu(conv1), ksize=[1, 2, 2, 1],
-                                         strides=[1, 2, 2, 1], padding='SAME')
+                pooled1 = tf.nn.max_pool(tf.nn.relu(conv1), ksize=pooling_ksize,
+                                         strides=pooling_strides, padding='SAME')
                 # Convolution
                 conv2 = tf.nn.conv2d(pooled1, layer2_weights, [1, 1, 1, 1], padding='SAME') + layer2_biases
-                pooled2 = tf.nn.max_pool(tf.nn.relu(conv2), ksize=[1, 2, 2, 1],
-                                         strides=[1, 2, 2, 1], padding='SAME')
+                pooled2 = tf.nn.max_pool(tf.nn.relu(conv2), ksize=pooling_ksize,
+                                         strides=pooling_strides, padding='SAME')
                 # Fully Connected Layer
                 shape = pooled2.get_shape().as_list()
                 reshape = tf.reshape(pooled2, [shape[0], shape[1] * shape[2] * shape[3]])

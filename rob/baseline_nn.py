@@ -36,6 +36,9 @@ class Baseline_nn(Baseline):
 
         self._batch_size = batch_size
 
+        print('Parameters: batch_size: {}, hidden_nodes: {}, lamb_reg: {}, start_learning_rate: {}'
+              .format(batch_size, hidden_nodes, lamb_reg, start_learning_rate))
+
         split_by_half = lambda x, k: int(x / 2 ** k)
 
         input_layer_size = self._ds.image_size * self._ds.image_size * self._ds.num_channels
@@ -93,8 +96,6 @@ class Baseline_nn(Baseline):
             self.train_prediction = tf.nn.softmax(logits)
             self.test_prediction = tf.nn.softmax(model(self.tf_test_dataset, 1.0))
 
-            print('Training prediction: ', self.train_prediction)
-            print('Test prediction: ', self.test_prediction)
 
 
 

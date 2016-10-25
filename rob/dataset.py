@@ -30,7 +30,7 @@ class DataSet():
     def to_image(self, X):
         return X.reshape((X.shape[0], self.num_channels, self.image_size, self.image_size)).transpose(0, 2, 3, 1)
 
-    def load(self, flatten=True):
+    def load(self, flatten=True, norm='l2'):
         # Load data files
         b1 = self.unpickle('cifar-10-batches-py/data_batch_1')
         b2 = self.unpickle('cifar-10-batches-py/data_batch_2')
@@ -46,18 +46,20 @@ class DataSet():
         # Convert to image (for visualisation purposes)
         self.image = self.to_image(self.data)
 
+        #Don't forget to convert (normalize) the image data to floats between 0 and 1 by dividing by 255.0
 
-
+        # Normalise
+        self.data = normalize(self.data, axis=0, norm=norm)
 
         if flatten:
             # Reformat
             self.data = self.data.reshape((-1, self.image_size * self.image_size * self.num_channels)).astype(np.float32)
 
             # Normalise
-            self.data = normalize(self.data, axis=0)
+            #self.data = normalize(self.data, axis=0)
         else:
             # Normalise
-            self.data = normalize(self.data, axis=0)
+            #self.data = normalize(self.data, axis=0)
 
             # Reformat
             self.data = self.data.reshape((-1, self.image_size, self.image_size, self.num_channels)).astype(np.float32)
