@@ -70,8 +70,9 @@ class Baseline:
         """
 
         # config = tf.ConfigProto(
-        #     device_count={'GPU': gpu}
+        #     device_count={'GPU': 0 if run_on_cpu else 1}
         # )
+
 
         with tf.Session(graph = self.graph) as session:
 

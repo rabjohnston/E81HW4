@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import tensorflow as tf
+import gc
 from dataset import DataSet
 from baseline import Baseline
 
@@ -17,7 +18,7 @@ class Baseline_cnn(Baseline):
         initial = tf.constant(0.1, shape=shape)
         return tf.Variable(initial)
 
-    def create(self, batch_size = 16,
+    def create(self, batch_size = 8,
                      patch_size = 5,
                      depth1 = 32,
                      depth2 = 64,
@@ -83,5 +84,7 @@ class Baseline_cnn(Baseline):
 
             # Predictions for the training, validation, and test data.
             self.train_prediction = tf.nn.softmax(logits)
+
+            gc.collect()
             self.test_prediction = tf.nn.softmax(model(self.tf_test_dataset, 1.0))
 

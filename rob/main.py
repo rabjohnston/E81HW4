@@ -1,50 +1,44 @@
 
 import time
+import sys
 import datetime
 import numpy as np
 import pickle
+import tensorflow as tf
+
 #import matplotlib.pyplot as plt
 from dataset import DataSet
 from baseline_nn import Baseline_nn
 from baseline_cnn import Baseline_cnn
+from baseline_axn import Baseline_axn
 
-# def plot():
-#     # Plot all ROC curves
-#     plt.figure()
-#     for i, clf in zip(range(len(classifiers)), classifiers):
-#         fpr, tpr, _ = roc_curve(test_labels.ravel(), test_preds[clf])
-#         roc_auc = auc(fpr, tpr)
-#         plt.plot(fpr, tpr,
-#                  label='ROC curve ' + clf + ' (area = {0:0.4f})'
-#                                             ''.format(roc_auc),
-#                  color=dark2_colors[i], linestyle='-', linewidth=2)
-#
-#     plt.plot([0, 1], [0, 1], 'k--', lw=2)
-#     plt.xlim([-0.1, 1.0])
-#     plt.ylim([0.0, 1.05])
-#     plt.xlabel('False Positive Rate')
-#     plt.ylabel('True Positive Rate')
-#     plt.title('Comparison of multiclass micro-average ROC curves')
-#     plt.legend(loc="lower right", fontsize=14)
-#     plt.show()
 
 
 def run(model, iteration, num_epochs=50000):
 
-    start = time.time()
+    try:
+        start = time.time()
 
-    model.run_session(num_epochs)
+        model.run_session(num_epochs)
 
-    timeCompleted = round((time.time( ) -start ) /60, 2)
-    print("Completed in {} minutes".format(timeCompleted))
+        timeCompleted = round((time.time( ) -start ) /60, 2)
+        print("Completed in {} minutes".format(timeCompleted))
 
-    # Save
-    base_filename = 'saved_{}_{:03d}'.format(model.name, iteration)
+        # Save
+        base_filename = 'saved_{}_{:03d}'.format(model.name, iteration)
 
-    print(base_filename)
+        print(base_filename)
 
-    np.save('{}.preds'.format(base_filename), model.test_preds)
-    pickle.dump(model.params, open('{}.params'.format(base_filename), 'wb'))
+        np.save('{}.preds'.format(base_filename), model.test_preds)
+        pickle.dump(model.params, open('{}.params'.format(base_filename), 'wb'))
+
+    # except tf.errors.ResourceExhaustedError as e:
+    #     print('Memory Exception encountered: ', e)
+    #     if run_on_cpu == False:
+    #         run(model, iteration, num_epochs, run_on_cpu=True)
+    except:
+        e = sys.exc_info()[0]
+        print('Exception encountered: ', e)
 
 
 def searchForNNParams(ds, num_epochs=30000):
@@ -67,7 +61,7 @@ def searchForNNParams(ds, num_epochs=30000):
                 iteration += 1
 
 
-def searchForCNNParams(ds, num_epochs=30000):
+def searchForCNNParams(ds, num_batches=30000):
     # Define Hyper-parameters
     batch_sizes = { 8, 16, 32, 64 }
     patch_sizes = { 5, 6, 8, 10, 12 }
@@ -75,7 +69,7 @@ def searchForCNNParams(ds, num_epochs=30000):
     # This seriously chews up memory
     depth1s = { 32, 64 }
     depth2s = { 64, 128 }
-    num_hiddens = { 1024, 2048 }
+    num_hiddens = { 1024 }
 
     iteration = 0
 
@@ -91,7 +85,7 @@ def searchForCNNParams(ds, num_epochs=30000):
                                    depth1=depth1,
                                    depth2=depth2,
                                    num_hidden=num_hidden)
-                        run(cnn, iteration, num_epochs)
+                        run(cnn, iteration, num_batches)
                         cnn = None
                         iteration += 1
 
@@ -115,22 +109,36 @@ def runCNNs():
     shapedDataSet.load(False)
 
     # Baseline CNN
-    #cnn = Baseline_cnn(shapedDataSet)
-    #cnn.create()
-    #run(cnn, 0, num_epochs=1)
+    # cnn = Baseline_cnn(shapedDataSet)
+    # cnn.create(batch_size=8, patch_size=)
+    # run(cnn, 0, num_epochs=30000)
 
     # Search for parameters
-    searchForCNNParams(shapedDataSet, num_epochs=50000)
+    searchForCNNParams(shapedDataSet, num_batches=30000)
 
+def runAXNs():
 
+    shapedDataSet = DataSet()
+    shapedDataSet.load(False)
+
+    # Baseline CNN
+    axn = Baseline_axn(shapedDataSet)
+    axn.create()
+    run(axn, 0, num_epochs=1)
+
+    # Search for parameters
+    #searchForCNNParams(shapedDataSet, num_epochs=1000)
 
 def main():
     # Visualise the data for one image
     # d.display(40000)
 
-    runNNs()
+    #runNNs()
 
-    #runCNNs()
+    #
+    runCNNs()
+
+    #runAXNs()
 
     print('Finished')
 

@@ -81,18 +81,18 @@ class DataSet():
         self.data = np.vstack([b1[b'data'], b2[b'data'], b3[b'data'], b4[b'data'], b5[b'data']]).astype(np.float32)
 
         # Convert to image (for visualisation purposes)
-        self.image = self.to_image(self.data)
-
-        #Don't forget to convert (normalize) the image data to floats between 0 and 1 by dividing by 255.0 - Dave's comment
+        # self.image = self.to_image(self.data)
 
         # Normalise - possibly not right.
-        self.data = normalize(self.data, axis=0, norm=norm)
+        # self.data = normalize(self.data, axis=0, norm=norm)
+        # Normalise between 0 and 1
+        self.data = np.array(self.data, dtype=float) / 255.0
 
         # Reformat the data. We either flatten it (useful for NN) or reshape it into a 3D structure (for CNNs)
         if flatten:
             self.data = self.data.reshape((-1, self.image_size * self.image_size * self.num_channels)).astype(np.float32)
         else:
-            self.data = self.data.reshape((-1, self.image_size, self.image_size, self.num_channels)).astype(np.float32)
+            self.data = self.data.reshape((-1, self.num_channels, self.image_size, self.image_size)).astype(np.float32).transpose([0,2,3,1])
 
 
         # Concatenate labels
