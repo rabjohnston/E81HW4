@@ -19,6 +19,7 @@ class Baseline_axn(Baseline):
         return tf.Variable(initial)
 
     def create(self, batch_size = 64, lamb_reg = 0.0005, padding = 'SAME',
+               stride = 2,
                l1filter = 1,
                l2filter = 1,
                l3filter = 1):
@@ -61,8 +62,8 @@ class Baseline_axn(Baseline):
                 # Convolution
                 conv1 = tf.nn.conv2d(data, layer1_weights, [l1filter, l1filter, 1, 1], padding=padding) + layer1_biases
                 # Max pooling
-                pooled1 = tf.nn.max_pool(tf.nn.relu(conv1), ksize=[l1filter, 3, 3, 1],
-                                         strides=[1, 2, 2, 1], padding=padding)
+                pooled1 = tf.nn.max_pool(tf.nn.relu(conv1), ksize=[1, 3, 3, 1],
+                                         strides=[1, stride, stride, 1], padding=padding)
                 # Normalization
                 norm1 = tf.nn.lrn(pooled1, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75)
                 # Dropout
@@ -72,7 +73,7 @@ class Baseline_axn(Baseline):
                 conv2 = tf.nn.conv2d(norm1, layer2_weights, [l2filter, l2filter, 1, 1], padding=padding) + layer2_biases
                 # Max pooling
                 pooled2 = tf.nn.max_pool(tf.nn.relu(conv2), ksize=[1, 3, 3, 1],
-                                         strides=[1, 2, 2, 1], padding=padding)
+                                         strides=[1, stride, stride, 1], padding=padding)
                 # Normalization
                 norm2 = tf.nn.lrn(pooled2, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75)
                 # Dropout
@@ -82,7 +83,7 @@ class Baseline_axn(Baseline):
                 conv3 = tf.nn.conv2d(norm2, layer3_weights, [l3filter, l3filter, 1, 1], padding=padding) + layer3_biases
                 # Max pooling
                 pooled3 = tf.nn.max_pool(tf.nn.relu(conv3), ksize=[1, 3, 3, 1],
-                                         strides=[1, 2, 2, 1], padding=padding)
+                                         strides=[1, stride, stride, 1], padding=padding)
                 # Normalization
                 norm3 = tf.nn.lrn(pooled3, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75)
                 # Dropout
