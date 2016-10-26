@@ -18,19 +18,29 @@ class Baseline_axn(Baseline):
         initial = tf.constant(0.1, shape=shape)
         return tf.Variable(initial)
 
-    def create(self, batch_size = 64, lamb_reg = 0.0005):
+    def create(self, batch_size = 64, lamb_reg = 0.0005, padding = 'SAME',
+               l1filter = 1,
+               l2filter = 1,
+               l3filter = 1):
 
-        graph = tf.Graph()
+        self.params = {'batch_size': batch_size, 'lamb_reg': lamb_reg, 'padding' : padding,
+                       'l1filter':l1filter, 'l2filter':l2filter, 'l3filter':l3filter }
+        print('Parameters: ', self.params);
+
+        self._batch_size = batch_size
+
         num_labels = 10
 
-        with graph.as_default():
+        self.graph = tf.Graph()
+        with self.graph.as_default():
             # Input data.
             self.tf_train_dataset = tf.placeholder(tf.float32, shape=(batch_size, self._ds.image_size, self._ds.image_size, self._ds.num_channels))
             self.tf_train_labels = tf.placeholder(tf.float32, shape=(batch_size, num_labels))
             self.tf_test_dataset = tf.constant(self._ds.test_dataset)
 
             # Variables.
-            layer1_weights = self.weight_variable([3, 3, 1, 64])
+            num_channels=3
+            layer1_weights = self.weight_variable([3, 3, num_channels, 64])
             layer1_biases = self.bias_variable([64])
             layer2_weights = self.weight_variable([3, 3, 64, 128])
             layer2_biases = self.bias_variable([128])
@@ -47,31 +57,32 @@ class Baseline_axn(Baseline):
 
             # Model with dropout
             def model(data, proba=self.tf_keep_prob):
+
                 # Convolution
-                conv1 = tf.nn.conv2d(data, layer1_weights, [1, 1, 1, 1], padding='SAME') + layer1_biases
+                conv1 = tf.nn.conv2d(data, layer1_weights, [l1filter, l1filter, 1, 1], padding=padding) + layer1_biases
                 # Max pooling
-                pooled1 = tf.nn.max_pool(tf.nn.relu(conv1), ksize=[1, 3, 3, 1],
-                                         strides=[1, 2, 2, 1], padding='SAME')
+                pooled1 = tf.nn.max_pool(tf.nn.relu(conv1), ksize=[l1filter, 3, 3, 1],
+                                         strides=[1, 2, 2, 1], padding=padding)
                 # Normalization
                 norm1 = tf.nn.lrn(pooled1, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75)
                 # Dropout
                 norm1 = tf.nn.dropout(norm1, proba)
 
                 # Convolution
-                conv2 = tf.nn.conv2d(norm1, layer2_weights, [1, 1, 1, 1], padding='SAME') + layer2_biases
+                conv2 = tf.nn.conv2d(norm1, layer2_weights, [l2filter, l2filter, 1, 1], padding=padding) + layer2_biases
                 # Max pooling
                 pooled2 = tf.nn.max_pool(tf.nn.relu(conv2), ksize=[1, 3, 3, 1],
-                                         strides=[1, 2, 2, 1], padding='SAME')
+                                         strides=[1, 2, 2, 1], padding=padding)
                 # Normalization
                 norm2 = tf.nn.lrn(pooled2, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75)
                 # Dropout
                 norm2 = tf.nn.dropout(norm2, proba)
 
                 # Convolution
-                conv3 = tf.nn.conv2d(norm2, layer3_weights, [1, 1, 1, 1], padding='SAME') + layer3_biases
+                conv3 = tf.nn.conv2d(norm2, layer3_weights, [l3filter, l3filter, 1, 1], padding=padding) + layer3_biases
                 # Max pooling
                 pooled3 = tf.nn.max_pool(tf.nn.relu(conv3), ksize=[1, 3, 3, 1],
-                                         strides=[1, 2, 2, 1], padding='SAME')
+                                         strides=[1, 2, 2, 1], padding=padding)
                 # Normalization
                 norm3 = tf.nn.lrn(pooled3, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75)
                 # Dropout
@@ -88,11 +99,11 @@ class Baseline_axn(Baseline):
             # Training computation.
             logits = model(self.tf_train_dataset, self.tf_keep_prob)
             loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits, self.tf_train_labels))
-            regularizers = (tf.nn.l2_loss(layer1_weights) + tf.nn.l2_loss(layer1_biases) + \
-                            tf.nn.l2_loss(layer2_weights) + tf.nn.l2_loss(layer2_biases) + \
-                            tf.nn.l2_loss(layer3_weights) + tf.nn.l2_loss(layer3_biases) + \
-                            tf.nn.l2_loss(layer4_weights) + tf.nn.l2_loss(layer4_biases) + \
-                            tf.nn.l2_loss(layer5_weights) + tf.nn.l2_loss(layer5_biases) + \
+            regularizers = (tf.nn.l2_loss(layer1_weights) + tf.nn.l2_loss(layer1_biases) +
+                            tf.nn.l2_loss(layer2_weights) + tf.nn.l2_loss(layer2_biases) +
+                            tf.nn.l2_loss(layer3_weights) + tf.nn.l2_loss(layer3_biases) +
+                            tf.nn.l2_loss(layer4_weights) + tf.nn.l2_loss(layer4_biases) +
+                            tf.nn.l2_loss(layer5_weights) + tf.nn.l2_loss(layer5_biases) +
                             tf.nn.l2_loss(layer6_weights) + tf.nn.l2_loss(layer6_biases))
 
             # Add the regularization term to the loss.

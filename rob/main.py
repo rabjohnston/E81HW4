@@ -1,6 +1,7 @@
 
 import time
 import sys
+import traceback
 import datetime
 import numpy as np
 import pickle
@@ -39,6 +40,7 @@ def run(model, iteration, num_epochs=50000):
     except:
         e = sys.exc_info()[0]
         print('Exception encountered: ', e)
+        print(traceback.format_exc())
 
 
 def searchForNNParams(ds, num_epochs=30000):
@@ -69,7 +71,7 @@ def searchForCNNParams(ds, num_batches=30000):
     # This seriously chews up memory
     depth1s = { 32, 64 }
     depth2s = { 64, 128 }
-    num_hiddens = { 1024 }
+    num_hiddens = { 1024, 2048 }
 
     iteration = 0
 
@@ -136,9 +138,9 @@ def main():
     #runNNs()
 
     #
-    runCNNs()
+    #runCNNs()
 
-    #runAXNs()
+    runAXNs()
 
     print('Finished')
 
