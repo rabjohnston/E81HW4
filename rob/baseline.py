@@ -23,6 +23,7 @@ class Baseline:
         # Tensor flow variables for the training and test data
         self.tf_train_dataset = None
         self.tf_train_labels = None
+        self.tf_valid_dataset = None
         self.tf_test_dataset = None
 
         # Tensor flow variable
@@ -44,11 +45,36 @@ class Baseline:
 
         # After training we'll save the predictions on the training and test data
         self.train_prediction = None
+        self.valid_prediction = None
         self.test_prediction = None
 
         # After training we'll also store the test predicitons
         self.test_preds = None
 
+    # FLAGS = tf.app.flags.FLAGS
+    #
+    # # Basic model parameters.
+    # tf.app.flags.DEFINE_integer('batch_size', 128,
+    #                             """Number of images to process in a batch.""")
+    # tf.app.flags.DEFINE_string('data_dir', '/tmp/cifar10_data',
+    #                            """Path to the CIFAR-10 data directory.""")
+    # tf.app.flags.DEFINE_boolean('use_fp16', False,
+    #                             """Train the model using fp16.""")
+    #
+    # def _variable_on_cpu(name, shape, initializer):
+    #     """Helper to create a Variable stored on CPU memory.
+    #     Args:
+    #       name: name of the variable
+    #       shape: list of ints
+    #       initializer: initializer for Variable
+    #     Returns:
+    #       Variable Tensor
+    #     """
+    #     with tf.device('/cpu:0'):
+    #         #dtype = tf.float16 if FLAGS.use_fp16 else tf.float32
+    #         var = tf.get_variable(name, shape, initializer=initializer, dtype=dtype)
+    #
+    #     return var
 
     def accuracy(self, predictions, labels):
         """
@@ -91,8 +117,12 @@ class Baseline:
                 # Print out status of run
                 if (batch % 500 == 0):
                     print("Minibatch loss at batch {}: {}".format(batch, l))
-                    print("Minibatch accuracy: {:.1f}".format(self.accuracy(predictions, batch_labels)))
-                    #print("Validation accuracy: {:.1f}".format(self.accuracy(self.valid_prediction.eval(), self.valid_labels)))
+
+                    train_accuracy = self.accuracy(predictions, batch_labels)
+                    print("Minibatch accuracy: {:.1f}".format(train_accuracy))
+
+                    valid_accuracy = self.accuracy(self.valid_prediction.eval(), self._ds.valid_labels)
+                    print("Validation accuracy: {:.1f}".format(valid_accuracy))
 
             accuracy = self.accuracy(self.test_prediction.eval(), self._ds.test_labels)
             self.params['accuracy'] = accuracy

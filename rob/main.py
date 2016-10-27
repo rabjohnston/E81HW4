@@ -15,12 +15,12 @@ from baseline_axn import Baseline_axn
 
 
 
-def run(model, iteration, num_epochs=50000):
+def run(model, iteration, num_batches=50000):
 
     try:
         start = time.time()
 
-        model.run_session(num_epochs)
+        model.run_session(num_batches)
 
         timeCompleted = round((time.time( ) -start ) /60, 2)
         print("Completed in {} minutes".format(timeCompleted))
@@ -116,7 +116,7 @@ def runCNNs():
     # run(cnn, 0, num_epochs=30000)
 
     # Search for parameters
-    searchForCNNParams(shapedDataSet, num_batches=30000)
+    searchForCNNParams(shapedDataSet, num_batches=60000)
 
 def runAXNs():
 
@@ -126,10 +126,10 @@ def runAXNs():
     # Baseline CNN
     axn = Baseline_axn(shapedDataSet)
     axn.create()
-    run(axn, 0, num_epochs=1)
+    run(axn, 0, num_batches=60000)
 
     # Search for parameters
-    #searchForCNNParams(shapedDataSet, num_epochs=1000)
+    #searchForCNNParams(shapedDataSet, num_batches=1000)
 
 def main():
     # Visualise the data for one image
@@ -147,6 +147,4 @@ def main():
 if __name__ == '__main__':
     main()
 
-# Default
-# Test accuracy: 99.3
-# Completed in 16.42 minutes
+

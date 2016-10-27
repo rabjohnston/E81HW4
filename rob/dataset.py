@@ -17,14 +17,17 @@ class DataSet():
         # The image data (X)
         self.data = None
 
-        # The image data that we've split off for training
-        self.test_dataset =None
-
-        # The image data that we've split off for testing
-        self.train_dataset = None
-
         # The image data in a form that we can display as an image (for debug purposes)
         self.image = None
+
+        # The image data that we've split off for training
+        self.train_dataset =None
+
+        # The image data that we've split off for validation
+        self.valid_dataset =None
+
+        # The test image data
+        self.test_dataset = None
 
         # The image labels (Y)
         self.labels = None
@@ -33,6 +36,9 @@ class DataSet():
         self.train_labels = None
 
         # The image labels that we've split off for training
+        self.train_labels = None
+
+        # The test labels
         self.test_labels = None
 
         # The image size (32 x 32)
@@ -40,6 +46,9 @@ class DataSet():
 
         # The number of channels (RGB = 3)
         self.num_channels = 3
+
+        # The number of classes
+        self.num_labels = 10
 
 
     def unpickle(self, file):
@@ -62,8 +71,22 @@ class DataSet():
         """
         return X.reshape((X.shape[0], self.num_channels, self.image_size, self.image_size)).transpose(0, 2, 3, 1)
 
+    def reformat(self, X, flatten):
+        if flatten:
+            X = X.reshape((-1, self.image_size * self.image_size * self.num_channels)).astype(np.float32)
+        else:
+            X = X.reshape((-1, self.num_channels, self.image_size, self.image_size)).astype(np.float32).transpose([0,2,3,1])
 
-    def load(self, flatten=True, norm='l2'):
+        return X
+
+    def normalise(self, X):
+        return np.array(X, dtype=float) / 255.0
+
+    def load(self, flatten=True):
+        self._loadData(flatten)
+        self._loadTest(flatten)
+
+    def _loadData(self, flatten):
         """
         Load all of the cifar-10 data.
         :param flatten: determines whether we flatten the data or reshape it as a 3D structure
@@ -86,31 +109,38 @@ class DataSet():
         # Normalise - possibly not right.
         # self.data = normalize(self.data, axis=0, norm=norm)
         # Normalise between 0 and 1
-        self.data = np.array(self.data, dtype=float) / 255.0
+        self.data = self.normalise(self.data)
 
         # Reformat the data. We either flatten it (useful for NN) or reshape it into a 3D structure (for CNNs)
-        if flatten:
-            self.data = self.data.reshape((-1, self.image_size * self.image_size * self.num_channels)).astype(np.float32)
-        else:
-            self.data = self.data.reshape((-1, self.num_channels, self.image_size, self.image_size)).astype(np.float32).transpose([0,2,3,1])
-
+        self.data = self.reformat( self.data, flatten )
 
         # Concatenate labels
         labels = np.hstack([b1[b'labels'], b2[b'labels'], b3[b'labels'], b4[b'labels'], b5[b'labels']])
 
         # Reformat labels
-        num_labels = 10
-        self.labels = (np.arange(num_labels) == labels[:, None]).astype(np.float32)
+        self.labels = (np.arange(self.num_labels) == labels[:, None]).astype(np.float32)
 
         # Pull out the names of the labels
         meta = self.unpickle('cifar-10-batches-py/batches.meta')
         self.label_name = meta[b'label_names']
 
         # Split the data into test and training data
-        self.train_dataset, self.test_dataset, self.train_labels, self.test_labels = \
-            train_test_split(self.data, self.labels, test_size=.33, random_state=10)
+        self.train_dataset, self.valid_dataset, self.train_labels, self.valid_labels = \
+            train_test_split(self.data, self.labels, test_size=.25, random_state=10)
 
+    def _loadTest(self, flatten):
 
+        # Load data file
+        b1 = self.unpickle('cifar-10-batches-py/test_batch')
+
+        labels = np.hstack(b1[b'labels'])
+        self.test_labels = (np.arange(self.num_labels) == labels[:, None]).astype(np.float32)
+
+        data = b1[b'data']
+        data = self.normalise(data)
+        data = self.reformat(data, flatten)
+
+        self.test_dataset = data.astype(np.float32)
 
 
     def display(self, id):

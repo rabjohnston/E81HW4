@@ -43,7 +43,10 @@ class Baseline_cnn(Baseline):
             # Input data.
             self.tf_train_dataset = tf.placeholder(tf.float32, shape=(batch_size, image_size, image_size, num_channels))
             self.tf_train_labels = tf.placeholder(tf.float32, shape=(batch_size, num_labels))
-            self.tf_test_dataset = tf.constant(self._ds.test_dataset)
+
+            with tf.device('/cpu:0'):
+                self.tf_valid_dataset = tf.constant(self._ds.valid_dataset)
+                self.tf_test_dataset = tf.constant(self._ds.test_dataset)
 
             # Variables.
             layer1_weights = self.weight_variable([patch_size, patch_size, num_channels, depth1])
@@ -85,6 +88,7 @@ class Baseline_cnn(Baseline):
             # Predictions for the training, validation, and test data.
             self.train_prediction = tf.nn.softmax(logits)
 
-            gc.collect()
-            self.test_prediction = tf.nn.softmax(model(self.tf_test_dataset, 1.0))
+            with tf.device('/cpu:0'):
+                self.valid_prediction = tf.nn.softmax(model(self.tf_valid_dataset, 1.0))
+                self.test_prediction = tf.nn.softmax(model(self.tf_test_dataset, 1.0))
 

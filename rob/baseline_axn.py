@@ -37,7 +37,10 @@ class Baseline_axn(Baseline):
             # Input data.
             self.tf_train_dataset = tf.placeholder(tf.float32, shape=(batch_size, self._ds.image_size, self._ds.image_size, self._ds.num_channels))
             self.tf_train_labels = tf.placeholder(tf.float32, shape=(batch_size, num_labels))
-            self.tf_test_dataset = tf.constant(self._ds.test_dataset)
+            with tf.device('/cpu:0'):
+                self.tf_valid_dataset = tf.constant(self._ds.valid_dataset)
+                self.tf_test_dataset = tf.constant(self._ds.test_dataset)
+
 
             # Variables.
             num_channels=3
@@ -114,5 +117,10 @@ class Baseline_axn(Baseline):
 
             # Predictions for the training, validation, and test data.
             self.train_prediction = tf.nn.softmax(logits)
-            #valid_prediction = tf.nn.softmax(model(tf_valid_dataset, 1.0))
-            self.test_prediction = tf.nn.softmax(model(self.tf_test_dataset, 1.0))
+
+
+            with tf.device('/cpu:0'): # Comment this out if you have a GPU > 8Gb
+                self.valid_prediction = tf.nn.softmax(model(self.tf_valid_dataset, 1.0))
+
+            with tf.device('/cpu:0'):
+                self.test_prediction = tf.nn.softmax(model(self.tf_test_dataset, 1.0))
