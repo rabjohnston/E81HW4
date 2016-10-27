@@ -24,7 +24,7 @@ class Baseline_axn(Baseline):
                l2filter = 1,
                l3filter = 1):
 
-        self.params = {'batch_size': batch_size, 'lamb_reg': lamb_reg, 'padding' : padding,
+        self.params = {'batch_size': batch_size, 'lamb_reg': lamb_reg, 'padding' : padding, 'stride':stride,
                        'l1filter':l1filter, 'l2filter':l2filter, 'l3filter':l3filter }
         print('Parameters: ', self.params);
 
