@@ -2,12 +2,15 @@
 import tensorflow as tf
 import gc
 from dataset import DataSet
+from optimizer_params import *
 from baseline import Baseline
 
 class Baseline_axn(Baseline):
 
     def __init__(self, ds):
         Baseline.__init__(self,ds, 'AXN')
+
+        self.optimizer_params = None
 
     def weight_variable(self, shape):
         initial = tf.truncated_normal(shape, stddev=0.01)
@@ -18,7 +21,9 @@ class Baseline_axn(Baseline):
         initial = tf.constant(0.1, shape=shape)
         return tf.Variable(initial)
 
-    def create(self, batch_size = 64, lamb_reg = 0.0005, padding = 'SAME',
+    def create(self,
+               optimizer_params,
+               batch_size = 64, lamb_reg = 0.0005, padding = 'SAME',
                stride = 2,
                l1filter = 1,
                l2filter = 1,
@@ -27,6 +32,9 @@ class Baseline_axn(Baseline):
         self.params = {'batch_size': batch_size, 'lamb_reg': lamb_reg, 'padding' : padding, 'stride':stride,
                        'l1filter':l1filter, 'l2filter':l2filter, 'l3filter':l3filter }
         print('Parameters: ', self.params);
+
+        self.optimizer_params = optimizer_params;
+        print('Optimizer Parameters: ', self.optimizer_params.to_string());
 
         self._batch_size = batch_size
 
@@ -112,8 +120,9 @@ class Baseline_axn(Baseline):
 
             # Add the regularization term to the loss.
             self.loss = tf.reduce_mean(loss + lamb_reg * regularizers)
+
             # Optimizer.
-            self.optimizer = tf.train.AdamOptimizer(1e-4).minimize(loss)
+            self.optimizer = self.choose_optimiser(self.optimizer_params).minimize(loss)
 
             # Predictions for the training, validation, and test data.
             self.train_prediction = tf.nn.softmax(logits)
@@ -124,3 +133,24 @@ class Baseline_axn(Baseline):
 
             with tf.device('/cpu:0'):
                 self.test_prediction = tf.nn.softmax(model(self.tf_test_dataset, 1.0))
+
+
+    def choose_optimiser(self, params):
+        optimizer = None
+
+        if params.name == 'Adam':
+            optimizer = tf.train.AdamOptimizer(learning_rate = params.learning_rate,
+                                               beta1=params.beta1, beta2=params.beta2, epsilon=params.epsilon) #.minimize(loss)
+        elif params.name == 'GD':
+            optimizer = tf.train.GradientDescentOptimizer(learning_rate = params.learning_rate)
+        elif params.name == 'Adagrad':
+            optimizer = tf.train.AdagradOptimizer(learning_rate = params.learning_rate,
+                                                  initial_accumulator_value=params.initial_accumulator_value)
+        elif params.name == 'Adadelta':
+            optimizer = tf.train.AdadeltaOptimizer(learning_rate = params.learning_rate,
+                                                   epsilon=params.epsilon,
+                                                   rho=params.rho)
+        else:
+            print('Unknown optimiser specified: ', params.name)
+
+        return optimizer

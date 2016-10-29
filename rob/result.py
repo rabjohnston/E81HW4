@@ -13,6 +13,8 @@ class Result():
         # A dict of the hyper-parameters and their values
         self.params = None
 
+        self.optimizer_params = None
+
     def unpickle(self, file):
         """
         Unpickle one of the cifar-10 batch files
@@ -36,7 +38,7 @@ class Result():
 
         np.load('{}.preds.npy'.format(base_filename), self.test_preds)
         self.params = self.unpickle( '{}.params'.format(base_filename))
-
+        self.optimizer_params = self.unpickle('{}.opt'.format(base_filename))
         print('Params: ', self.params)
 
 

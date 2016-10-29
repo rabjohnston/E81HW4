@@ -5,6 +5,14 @@ import tensorflow as tf
 import numpy as np
 
 
+class EpochValue:
+    def __init__(self, epoch, train_accuracy, test_accuracy, loss):
+        self.epoch = epoch
+        self.train_accuracy=train_accuracy
+        self.test_accuracy=test_accuracy
+        self.loss=loss
+
+
 class Baseline:
     """
     Model base. This allows us to build models and run them through tensorflow
@@ -50,6 +58,8 @@ class Baseline:
 
         # After training we'll also store the test predicitons
         self.test_preds = None
+
+        self.epocs = {}
 
     # FLAGS = tf.app.flags.FLAGS
     #
@@ -123,6 +133,8 @@ class Baseline:
 
                     valid_accuracy = self.accuracy(self.valid_prediction.eval(), self._ds.valid_labels)
                     print("Validation accuracy: {:.1f}".format(valid_accuracy))
+
+                    self.epocs[batch] = EpochValue(batch, train_accuracy, valid_accuracy, l)
 
             accuracy = self.accuracy(self.test_prediction.eval(), self._ds.test_labels)
             self.params['accuracy'] = accuracy
