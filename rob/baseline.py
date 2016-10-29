@@ -25,6 +25,10 @@ class Baseline:
         # The name of the model
         self.name = name
 
+        # Are we using a validation test data set? If so then we'll split off some data
+        # for validation otherwise we'll use it all for training.
+        self._use_valid = ds._use_valid
+
         # The batch size we're using
         self._batch_size = 0
 
@@ -37,8 +41,6 @@ class Baseline:
         # Tensor flow variable
         self.tf_keep_prob = None
 
-
-
         # The optimiser function
         self.optimizer = None
 
@@ -50,6 +52,8 @@ class Baseline:
         # The hyper parameters. These are stored in a dict so we can output them to file after a run.
         # This will be useful when we're evaluating the model
         self.params = None
+
+        self.optimizer_params = None
 
         # After training we'll save the predictions on the training and test data
         self.train_prediction = None
@@ -112,8 +116,10 @@ class Baseline:
 
         with tf.Session(graph = self.graph) as session:
 
+            # Build the summary operation based on the TF collection of Summaries.
             merged = tf.merge_all_summaries()
             writer = tf.train.SummaryWriter("/tmp/tensorflowlogs", session.graph)
+
             tf.initialize_all_variables().run()
             print("Initialized")
             for batch in range(num_batches):
@@ -124,6 +130,10 @@ class Baseline:
 
                 _, l, predictions = session.run([self.optimizer, self.loss, self.train_prediction], feed_dict=feed_dict)
 
+#                if batch % 100 == 0:
+#                    summary_str = session.run(merged)
+#                    writer.add_summary(summary_str, batch)
+
                 # Print out status of run
                 if (batch % 500 == 0):
                     print("Minibatch loss at batch {}: {}".format(batch, l))
@@ -131,8 +141,11 @@ class Baseline:
                     train_accuracy = self.accuracy(predictions, batch_labels)
                     print("Minibatch accuracy: {:.1f}".format(train_accuracy))
 
-                    valid_accuracy = self.accuracy(self.valid_prediction.eval(), self._ds.valid_labels)
-                    print("Validation accuracy: {:.1f}".format(valid_accuracy))
+                    if self._use_valid:
+                        valid_accuracy = self.accuracy(self.valid_prediction.eval(), self._ds.valid_labels)
+                        print("Validation accuracy: {:.1f}".format(valid_accuracy))
+                    else:
+                        valid_accuracy = 0
 
                     self.epocs[batch] = EpochValue(batch, train_accuracy, valid_accuracy, l)
 

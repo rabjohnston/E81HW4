@@ -45,7 +45,8 @@ class Baseline_cnn(Baseline):
             self.tf_train_labels = tf.placeholder(tf.float32, shape=(batch_size, num_labels))
 
             with tf.device('/cpu:0'):
-                self.tf_valid_dataset = tf.constant(self._ds.valid_dataset)
+                if self._use_valid:
+                    self.tf_valid_dataset = tf.constant(self._ds.valid_dataset)
                 self.tf_test_dataset = tf.constant(self._ds.test_dataset)
 
             # Variables.
@@ -89,6 +90,7 @@ class Baseline_cnn(Baseline):
             self.train_prediction = tf.nn.softmax(logits)
 
             with tf.device('/cpu:0'):
-                self.valid_prediction = tf.nn.softmax(model(self.tf_valid_dataset, 1.0))
+                if self._use_valid:
+                    self.valid_prediction = tf.nn.softmax(model(self.tf_valid_dataset, 1.0))
                 self.test_prediction = tf.nn.softmax(model(self.tf_test_dataset, 1.0))
 

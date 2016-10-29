@@ -9,7 +9,11 @@ class DataSet():
     Wrapper to hold the 60,000 cifar-10 images
     """
 
-    def __init__(self):
+    def __init__(self, use_valid = False):
+
+        # Are we using a validation test data set? If so then we'll split off some data
+        # for validation otherwise we'll use it all for training.
+        self._use_valid = use_valid
 
         # The name of the labels, e.g. cat, car
         self.label_name = None
@@ -79,8 +83,10 @@ class DataSet():
 
         return X
 
+
     def normalise(self, X):
         return np.array(X, dtype=float) / 255.0
+
 
     def load(self, flatten=True):
         self._loadData(flatten)
@@ -125,8 +131,13 @@ class DataSet():
         self.label_name = meta[b'label_names']
 
         # Split the data into test and training data
-        self.train_dataset, self.valid_dataset, self.train_labels, self.valid_labels = \
-            train_test_split(self.data, self.labels, test_size=.25, random_state=10)
+        if self._use_valid:
+            self.train_dataset, self.valid_dataset, self.train_labels, self.valid_labels = \
+                train_test_split(self.data, self.labels, test_size=.25, random_state=10)
+        else:
+            self.train_dataset = self.data
+            self.train_labels = self.labels
+
 
     def _loadTest(self, flatten):
 

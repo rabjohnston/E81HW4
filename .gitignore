@@ -95,6 +95,7 @@ rob/cifar-10-batches-py/data_batch_4
 rob/cifar-10-batches-py/data_batch_5
 rob/cifar-10-batches-py/readme.html
 rob/cifar-10-batches-py/test_batch
+rob/results/*
 rob/.idea/misc.xml
 rob/.idea/modules.xml
 rob/.idea/rob.iml

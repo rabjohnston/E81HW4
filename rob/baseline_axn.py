@@ -12,6 +12,7 @@ class Baseline_axn(Baseline):
 
         self.optimizer_params = None
 
+
     def weight_variable(self, shape):
         initial = tf.truncated_normal(shape, stddev=0.01)
         print('initial ', initial)
@@ -46,7 +47,8 @@ class Baseline_axn(Baseline):
             self.tf_train_dataset = tf.placeholder(tf.float32, shape=(batch_size, self._ds.image_size, self._ds.image_size, self._ds.num_channels))
             self.tf_train_labels = tf.placeholder(tf.float32, shape=(batch_size, num_labels))
             with tf.device('/cpu:0'):
-                self.tf_valid_dataset = tf.constant(self._ds.valid_dataset)
+                if self._use_valid:
+                    self.tf_valid_dataset = tf.constant(self._ds.valid_dataset)
                 self.tf_test_dataset = tf.constant(self._ds.test_dataset)
 
 
@@ -110,7 +112,13 @@ class Baseline_axn(Baseline):
 
             # Training computation.
             logits = model(self.tf_train_dataset, self.tf_keep_prob)
-            loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits, self.tf_train_labels))
+            cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits, self.tf_train_labels)
+            cross_entropy_mean = tf.reduce_mean(cross_entropy)
+            #cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
+            #    logits, self.tf_train_labels, name='cross_entropy_per_example')
+            #cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy')
+            #tf.add_to_collection('losses', cross_entropy_mean)
+
             regularizers = (tf.nn.l2_loss(layer1_weights) + tf.nn.l2_loss(layer1_biases) +
                             tf.nn.l2_loss(layer2_weights) + tf.nn.l2_loss(layer2_biases) +
                             tf.nn.l2_loss(layer3_weights) + tf.nn.l2_loss(layer3_biases) +
@@ -119,17 +127,17 @@ class Baseline_axn(Baseline):
                             tf.nn.l2_loss(layer6_weights) + tf.nn.l2_loss(layer6_biases))
 
             # Add the regularization term to the loss.
-            self.loss = tf.reduce_mean(loss + lamb_reg * regularizers)
+            self.loss = tf.reduce_mean(cross_entropy_mean + lamb_reg * regularizers)
 
             # Optimizer.
-            self.optimizer = self.choose_optimiser(self.optimizer_params).minimize(loss)
+            self.optimizer = self.choose_optimiser(self.optimizer_params).minimize(cross_entropy_mean)
 
             # Predictions for the training, validation, and test data.
             self.train_prediction = tf.nn.softmax(logits)
 
-
-            with tf.device('/cpu:0'): # Comment this out if you have a GPU > 8Gb
-                self.valid_prediction = tf.nn.softmax(model(self.tf_valid_dataset, 1.0))
+            if self._use_valid:
+                with tf.device('/cpu:0'): # Comment this out if you have a GPU > 8Gb
+                    self.valid_prediction = tf.nn.softmax(model(self.tf_valid_dataset, 1.0))
 
             with tf.device('/cpu:0'):
                 self.test_prediction = tf.nn.softmax(model(self.tf_test_dataset, 1.0))
