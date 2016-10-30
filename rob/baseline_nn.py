@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import pandas as pd
-from IPython.display import display, Image
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import LabelBinarizer
-from sklearn.metrics import roc_curve, auc
-from six.moves import cPickle as pickle
-from six.moves import range
-
 
 
 import tensorflow as tf
