@@ -10,7 +10,7 @@ import tensorflow as tf
 
 #import matplotlib.pyplot as plt
 from dataset import DataSet
-from splitdataset import SplitDataset
+from splitdataset import SplitDataset2
 from baseline_nn import Baseline_nn
 from baseline_cnn import Baseline_cnn
 from baseline_axn import Baseline_axn
@@ -308,7 +308,7 @@ def runSplitAXNs():
 def runAXN2s():
 
     shapedDataSet = DataSet(use_valid=False)
-    shapedDataSet.load(False )
+    shapedDataSet.load(False, centre=True )
 
     # Baseline CNN
     #axn2 = Baseline_axn2(shapedDataSet)
@@ -327,7 +327,7 @@ def runAXN2s():
 
     # Baseline CNN
     axn = Baseline_axn2(shapedDataSet)
-    axn.create(AdamParams(),batch_size=256)
+    axn.create(AdamParams(),batch_size=128)
     run(axn, 0, num_batches=50000)
 
     # axn = Baseline_axn2(shapedDataSet)
@@ -342,19 +342,40 @@ def runAXN2s():
     # axn.create(AdadeltaParams())
     # run(axn, 3, num_batches=50000)
 
-def runLR():
 
+def runSingleLR(lr, X_train, y_train, X_valid, y_valid, X_test, y_test, iteration = 0):
     start = time.time()
-    lr = Baseline_lr()
-    lr.create()
+    lr.create(X_train, y_train, X_valid, y_valid, X_test, y_test)
 
     timeCompleted = round((time.time() - start) / 60, 2)
     print("Completed in {} minutes".format(timeCompleted))
     lr.params['time'] = timeCompleted
 
-    base_filename = 'saved_lr_000'
+    base_filename = 'saved_lr_{:03d}'.format(iteration)
     np.save('{}.preds'.format(base_filename), lr.test_preds)
     pickle.dump(lr.params, open('{}.params'.format(base_filename), 'wb'))
+
+
+def runLR():
+    lr = Baseline_lr()
+    X_train, y_train, X_valid, y_valid, X_test, y_test = lr.load()
+    runSingleLR(lr, X_train, y_train, X_valid, y_valid, X_test, y_test)
+
+
+def runSplitLR():
+    lr = Baseline_lr()
+    X_train, y_train, X_valid, y_valid, X_test, y_test = lr.load()
+
+    spl = SplitDataset2()
+    spl.load(X_train, y_train)
+
+    runSingleLR(lr, spl.a_dataset, spl.a_labels, X_valid, y_valid, X_test, y_test, iteration = 1)
+
+    runSingleLR(lr, spl.ab_dataset, spl.ab_labels, X_valid, y_valid, X_test, y_test, iteration=2)
+
+    runSingleLR(lr, spl.abc_dataset, spl.abc_labels, X_valid, y_valid, X_test, y_test, iteration=3)
+
+    runSingleLR(lr, spl.abcd_dataset, spl.abcd_labels, X_valid, y_valid, X_test, y_test, iteration=4)
 
 
 def main():
@@ -368,12 +389,14 @@ def main():
 
     #runAXNs()
 
-    #runAXN2s()
+    runAXN2s()
 
     #runSplitAXNs()
     #runSplitCNNs()
 
-    runLR()
+    #runLR()
+
+    #runSplitLR()
 
     print('Finished')
 

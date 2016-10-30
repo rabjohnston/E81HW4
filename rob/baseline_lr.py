@@ -11,7 +11,7 @@ class Baseline_lr:
         self.params = {}
         self.test_preds = None
 
-    def create(self):
+    def load(self, use_train = False):
         f1 = open('cifar-10-batches-py/data_batch_1', 'rb')
         f2 = open('cifar-10-batches-py/data_batch_2', 'rb')
         f3 = open('cifar-10-batches-py/data_batch_3', 'rb')
@@ -61,22 +61,38 @@ class Baseline_lr:
         train_labels = np.hstack((Y1, Y2, Y3, Y4, Y5))
         test_labels = np.hstack((Ytest))
 
-        train_dataset, valid_dataset, train_labels, valid_labels = \
-            train_test_split(train_dataset, train_labels, test_size=.25, random_state=10)
 
-        X_train = train_dataset
-        y_train = train_labels
-        X_valid = valid_dataset
-        y_valid = valid_labels
+        if use_train:
+            train_dataset, valid_dataset, train_labels, valid_labels = \
+                train_test_split(train_dataset, train_labels, test_size=.25, random_state=10)
+
+            X_train = train_dataset
+            y_train = train_labels
+            X_valid = valid_dataset
+            y_valid = valid_labels
+
+        else:
+            X_train = train_dataset
+            y_train = train_labels
+            X_valid = None
+            y_valid = None
+
         X_test = test_dataset
         y_test = test_labels
 
+        return X_train, y_train, X_valid, y_valid, X_test, y_test
+
+
+    def create(self, X_train, y_train, X_test, y_test, X_valid, y_valid):
         clf_LR = LogisticRegression(C=0.01, n_jobs=-1).fit(X_train, y_train)
 
-        print("Validation accuracy:", clf_LR.score(X_valid, y_valid))
-        print("Test accuracy:", clf_LR.score(X_test, y_test))
+        if X_valid is not None:
+            print("Validation accuracy:", clf_LR.score(X_valid, y_valid))
 
-        self.params['accuracy'] = clf_LR.score(X_test, y_test)
-        self.test_preds = clf_LR.predict_proba(X_test)
+        if X_test is not None:
+            print("Test accuracy:", clf_LR.score(X_test, y_test))
+
+            self.params['accuracy'] = clf_LR.score(X_test, y_test)
+            self.test_preds = clf_LR.predict_proba(X_test)
 
 
