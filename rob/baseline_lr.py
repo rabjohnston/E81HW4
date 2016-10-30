@@ -1,6 +1,6 @@
 
 import numpy as np
-
+from six.moves import cPickle
 
 from sklearn.cross_validation import train_test_split
 
