@@ -39,13 +39,13 @@ class Result:
         :return: Nothing
         """
 
-        print('Loading: ', base_filename)
+        #print('Loading: ', base_filename)
 
         self.test_preds = np.load('{}.preds.npy'.format(base_filename))
         self.params = self.unpickle( '{}.params'.format(base_filename))
         self.optimizer_params = self.unpickle('{}.opt'.format(base_filename))
         self.epochs = self.unpickle('{}.epochs'.format(base_filename))
-        print('Params: ', self.params)
+        #print('Params: ', self.params)
 
 
 
