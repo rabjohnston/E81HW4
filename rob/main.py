@@ -10,6 +10,7 @@ import tensorflow as tf
 
 #import matplotlib.pyplot as plt
 from dataset import DataSet
+from splitdataset import SplitDataset
 from baseline_nn import Baseline_nn
 from baseline_cnn import Baseline_cnn
 from baseline_axn import Baseline_axn
@@ -214,6 +215,36 @@ def runAXNs():
     #searchForAXNParams(shapedDataSet, num_batches=1000)
 
 
+def runSplitAXNs():
+
+    def runSingleAXN(ds, iteration):
+        axn = Baseline_axn(ds)
+        axn.create(AdamParams())
+        run(axn, iteration, num_batches=1000)
+
+    shapedDataSet = DataSet(use_valid=False)
+    shapedDataSet.load(False)
+
+    split = SplitDataset()
+    split.load(shapedDataSet.train_dataset, shapedDataSet.train_labels)
+
+    shapedDataSet.train_dataset = split.a_dataset
+    shapedDataSet.train_labels = split.a_labels
+    runSingleAXN(shapedDataSet,0)
+
+    shapedDataSet.train_dataset = split.ab_dataset
+    shapedDataSet.train_labels = split.ab_labels
+    runSingleAXN(shapedDataSet, 1)
+
+    shapedDataSet.train_dataset = split.abc_dataset
+    shapedDataSet.train_labels = split.abc_labels
+    runSingleAXN(shapedDataSet, 2)
+
+    shapedDataSet.train_dataset = split.abcd_dataset
+    shapedDataSet.train_labels = split.abcd_labels
+    runSingleAXN(shapedDataSet, 3)
+
+
 def runAXN2s():
 
     shapedDataSet = DataSet(use_valid=False)
@@ -261,10 +292,11 @@ def main():
     #
     #runCNNs()
 
-    runAXNs()
+    #runAXNs()
 
     #runAXN2s()
 
+    runSplitAXNs()
 
 
     print('Finished')
