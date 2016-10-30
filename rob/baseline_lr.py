@@ -89,10 +89,10 @@ class Baseline_lr:
         if X_valid is not None:
             print("Validation accuracy:", clf_LR.score(X_valid, y_valid))
 
-        if X_test is not None:
-            print("Test accuracy:", clf_LR.score(X_test, y_test))
 
-            self.params['accuracy'] = clf_LR.score(X_test, y_test)
-            self.test_preds = clf_LR.predict_proba(X_test)
+        print("Test accuracy:", clf_LR.score(X_test, y_test))
+
+        self.params['accuracy'] = clf_LR.score(X_test, y_test)
+        self.test_preds = clf_LR.predict_proba(X_test)
 
 

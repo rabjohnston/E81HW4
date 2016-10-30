@@ -208,7 +208,7 @@ def runAXNs():
 
     # Baseline AXN
     axn = Baseline_axn(shapedDataSet)
-    axn.create(AdamParams())
+    axn.create(AdamParams(), batch_size=128)
     run(axn, 0, num_batches=50000)
 
     # Search for parameters
@@ -319,16 +319,16 @@ def runAXN2s():
     #searchForAXNParams(shapedDataSet, num_batches=1000)
 
     # GD tends to increase in error over 20000 batches
-    #searchForAXN2GDParams(shapedDataSet, num_batches=20000)
-    #searchForAXN2AdadeltaParams(shapedDataSet, num_batches=20000)
-    #searchForAXN2AdagradParams(shapedDataSet, num_batches=20000)
-    #searchForAXN2AdamParams(shapedDataSet, num_batches=20000)
+    searchForAXN2GDParams(shapedDataSet, num_batches=20000)
+    searchForAXN2AdadeltaParams(shapedDataSet, num_batches=20000)
+    searchForAXN2AdagradParams(shapedDataSet, num_batches=20000)
+    searchForAXN2AdamParams(shapedDataSet, num_batches=20000)
 
 
     # Baseline CNN
-    axn = Baseline_axn2(shapedDataSet)
-    axn.create(AdamParams(),batch_size=128)
-    run(axn, 0, num_batches=50000)
+    #axn = Baseline_axn2(shapedDataSet)
+    #axn.create(AdamParams(),batch_size=128)
+    #run(axn, 0, num_batches=50000)
 
     # axn = Baseline_axn2(shapedDataSet)
     # axn.create(AdagradParams())
@@ -345,6 +345,7 @@ def runAXN2s():
 
 def runSingleLR(lr, X_train, y_train, X_valid, y_valid, X_test, y_test, iteration = 0):
     start = time.time()
+
     lr.create(X_train, y_train, X_valid, y_valid, X_test, y_test)
 
     timeCompleted = round((time.time() - start) / 60, 2)
