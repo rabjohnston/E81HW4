@@ -215,12 +215,72 @@ def runAXNs():
     #searchForAXNParams(shapedDataSet, num_batches=1000)
 
 
+def runSplitNNs():
+
+    def runSingleNN(ds, iteration):
+        axn = Baseline_nn(ds)
+        axn.create()
+        run(axn, iteration, num_batches=20000)
+
+    ds = DataSet(use_valid=False)
+    ds.load()
+
+    split = SplitDataset()
+    split.load(ds.train_dataset, ds.train_labels)
+
+    ds.train_dataset = split.a_dataset
+    ds.train_labels = split.a_labels
+    runSingleNN(ds,0)
+
+    ds.train_dataset = split.ab_dataset
+    ds.train_labels = split.ab_labels
+    runSingleNN(ds, 1)
+
+    ds.train_dataset = split.abc_dataset
+    ds.train_labels = split.abc_labels
+    runSingleNN(ds, 2)
+
+    ds.train_dataset = split.abcd_dataset
+    ds.train_labels = split.abcd_labels
+    runSingleNN(ds, 3)
+
+
+def runSplitCNNs():
+
+    def runSingleCNN(ds, iteration):
+        axn = Baseline_cnn(ds)
+        axn.create()
+        run(axn, iteration, num_batches=20000)
+
+    ds = DataSet(use_valid=False)
+    ds.load(False)
+
+    split = SplitDataset()
+    split.load(ds.train_dataset, ds.train_labels)
+
+    ds.train_dataset = split.a_dataset
+    ds.train_labels = split.a_labels
+    runSingleCNN(ds,0)
+
+    ds.train_dataset = split.ab_dataset
+    ds.train_labels = split.ab_labels
+    runSingleCNN(ds, 1)
+
+    ds.train_dataset = split.abc_dataset
+    ds.train_labels = split.abc_labels
+    runSingleCNN(ds, 2)
+
+    ds.train_dataset = split.abcd_dataset
+    ds.train_labels = split.abcd_labels
+    runSingleCNN(ds, 3)
+
+
 def runSplitAXNs():
 
     def runSingleAXN(ds, iteration):
         axn = Baseline_axn(ds)
         axn.create(AdamParams())
-        run(axn, iteration, num_batches=1000)
+        run(axn, iteration, num_batches=20000)
 
     shapedDataSet = DataSet(use_valid=False)
     shapedDataSet.load(False)
@@ -290,14 +350,14 @@ def main():
     #runNNs()
 
     #
-    #runCNNs()
+    runCNNs()
 
     #runAXNs()
 
     #runAXN2s()
 
-    runSplitAXNs()
-
+    #runSplitAXNs()
+    #runSplitCNNs()
 
     print('Finished')
 

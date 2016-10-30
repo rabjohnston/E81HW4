@@ -18,7 +18,7 @@ class Baseline_cnn(Baseline):
         initial = tf.constant(0.1, shape=shape)
         return tf.Variable(initial)
 
-    def create(self, batch_size = 8,
+    def create(self, batch_size = 128,
                      patch_size = 5,
                      depth1 = 32,
                      depth2 = 64,
