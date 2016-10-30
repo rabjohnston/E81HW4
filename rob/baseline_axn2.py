@@ -198,8 +198,7 @@ class Baseline_axn2(Baseline):
                 return softmax_linear
 
             logits = model(self.tf_train_dataset)
-            #labels = tf.cast(labels, tf.int64)
-            #cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
+
             cross_entropy = tf.nn.softmax_cross_entropy_with_logits(
                 logits, self.tf_train_labels, name='cross_entropy_per_example')
             cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy')
@@ -210,7 +209,7 @@ class Baseline_axn2(Baseline):
             self.loss = tf.add_n(tf.get_collection('losses'), name='total_loss')
 
             # Optimizer.
-            self.optimizer = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy_mean)
+            self.optimizer = tf.train.AdamOptimizer(1e-4).minimize(self.loss)
 
             # Predictions for the training, validation, and test data.
             self.train_prediction = tf.nn.softmax(logits)

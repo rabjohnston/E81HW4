@@ -327,7 +327,7 @@ def runAXN2s():
 
     # Baseline CNN
     axn = Baseline_axn2(shapedDataSet)
-    axn.create(AdamParams())
+    axn.create(AdamParams(),batch_size=256)
     run(axn, 0, num_batches=50000)
 
     # axn = Baseline_axn2(shapedDataSet)
@@ -350,11 +350,11 @@ def main():
     #runNNs()
 
     #
-    runCNNs()
+    #runCNNs()
 
     #runAXNs()
 
-    #runAXN2s()
+    runAXN2s()
 
     #runSplitAXNs()
     #runSplitCNNs()
