@@ -35,7 +35,7 @@ def run(model, iteration, num_batches=50000):
         np.save('{}.preds'.format(base_filename), model.test_preds)
         pickle.dump(model.params, open('{}.params'.format(base_filename), 'wb'))
         pickle.dump(model.optimizer_params, open('{}.opt'.format(base_filename), 'wb'))
-        pickle.dump(model.epocs, open('{}.epocs'.format(base_filename), 'wb'))
+        pickle.dump(model.epochs, open('{}.epochs'.format(base_filename), 'wb'))
     except:
         e = sys.exc_info()[0]
         print('Exception encountered: ', e)
@@ -179,8 +179,8 @@ def runNNs():
 
     # Baseline Neural Network
     nn = Baseline_nn(flatDataSet)
-    nn.create()
-    run(nn, 0, num_batches=40000)
+    nn.create(start_learning_rate = 0.01)
+    run(nn, 0, num_batches=50000)
 
     # Search for parameters
     #searchForNNParams(flatDataSet)
@@ -192,23 +192,23 @@ def runCNNs():
     shapedDataSet.load(False)
 
     # Baseline CNN
-    # cnn = Baseline_cnn(shapedDataSet)
-    # cnn.create(batch_size=8, patch_size=)
-    # run(cnn, 0, num_epochs=30000)
+    cnn = Baseline_cnn(shapedDataSet)
+    cnn.create()
+    run(cnn, 0, num_batches=50000)
 
     # Search for parameters
-    searchForCNNParams(shapedDataSet, num_batches=60000)
+    #searchForCNNParams(shapedDataSet, num_batches=60000)
 
 
 def runAXNs():
 
-    shapedDataSet = DataSet()
+    shapedDataSet = DataSet(use_valid=False)
     shapedDataSet.load(False)
 
-    # Baseline CNN
+    # Baseline AXN
     axn = Baseline_axn(shapedDataSet)
     axn.create(AdamParams())
-    run(axn, 0, num_batches=3)
+    run(axn, 0, num_batches=50000)
 
     # Search for parameters
     #searchForAXNParams(shapedDataSet, num_batches=1000)
@@ -216,7 +216,7 @@ def runAXNs():
 
 def runAXN2s():
 
-    shapedDataSet = DataSet(use_valid=True)
+    shapedDataSet = DataSet(use_valid=False)
     shapedDataSet.load(False )
 
     # Baseline CNN
@@ -228,23 +228,40 @@ def runAXN2s():
     #searchForAXNParams(shapedDataSet, num_batches=1000)
 
     # GD tends to increase in error over 20000 batches
-    searchForAXN2GDParams(shapedDataSet, num_batches=20000)
-    searchForAXN2AdadeltaParams(shapedDataSet, num_batches=20000)
-    searchForAXN2AdagradParams(shapedDataSet, num_batches=20000)
-    searchForAXN2AdamParams(shapedDataSet, num_batches=20000)
+    #searchForAXN2GDParams(shapedDataSet, num_batches=20000)
+    #searchForAXN2AdadeltaParams(shapedDataSet, num_batches=20000)
+    #searchForAXN2AdagradParams(shapedDataSet, num_batches=20000)
+    #searchForAXN2AdamParams(shapedDataSet, num_batches=20000)
 
+
+    # Baseline CNN
+    axn = Baseline_axn2(shapedDataSet)
+    axn.create(AdamParams())
+    run(axn, 0, num_batches=50000)
+
+    # axn = Baseline_axn2(shapedDataSet)
+    # axn.create(AdagradParams())
+    # run(axn, 1, num_batches=50000)
+    #
+    # axn = Baseline_axn2(shapedDataSet)
+    # axn.create(GradientDescentParams())
+    # run(axn, 2, num_batches=50000)
+    #
+    # axn = Baseline_axn2(shapedDataSet)
+    # axn.create(AdadeltaParams())
+    # run(axn, 3, num_batches=50000)
 
 
 def main():
     # Visualise the data for one image
     # d.display(40000)
 
-    runNNs()
+    #runNNs()
 
     #
     #runCNNs()
 
-    #runAXNs()
+    runAXNs()
 
     #runAXN2s()
 

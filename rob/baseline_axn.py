@@ -12,7 +12,6 @@ class Baseline_axn(Baseline):
 
         self.optimizer_params = None
 
-
     def weight_variable(self, shape):
         initial = tf.truncated_normal(shape, stddev=0.01)
         print('initial ', initial)
@@ -112,13 +111,7 @@ class Baseline_axn(Baseline):
 
             # Training computation.
             logits = model(self.tf_train_dataset, self.tf_keep_prob)
-            cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits, self.tf_train_labels)
-            cross_entropy_mean = tf.reduce_mean(cross_entropy)
-            #cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
-            #    logits, self.tf_train_labels, name='cross_entropy_per_example')
-            #cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy')
-            #tf.add_to_collection('losses', cross_entropy_mean)
-
+            loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits, self.tf_train_labels))
             regularizers = (tf.nn.l2_loss(layer1_weights) + tf.nn.l2_loss(layer1_biases) +
                             tf.nn.l2_loss(layer2_weights) + tf.nn.l2_loss(layer2_biases) +
                             tf.nn.l2_loss(layer3_weights) + tf.nn.l2_loss(layer3_biases) +
@@ -127,10 +120,11 @@ class Baseline_axn(Baseline):
                             tf.nn.l2_loss(layer6_weights) + tf.nn.l2_loss(layer6_biases))
 
             # Add the regularization term to the loss.
-            self.loss = tf.reduce_mean(cross_entropy_mean + lamb_reg * regularizers)
+            self.loss = tf.reduce_mean(loss + lamb_reg * regularizers)
 
             # Optimizer.
-            self.optimizer = self.choose_optimiser(self.optimizer_params).minimize(cross_entropy_mean)
+            #self.optimizer = self.choose_optimiser(self.optimizer_params).minimize(loss)
+            self.optimizer = tf.train.AdamOptimizer(1e-4).minimize(self.loss)
 
             # Predictions for the training, validation, and test data.
             self.train_prediction = tf.nn.softmax(logits)

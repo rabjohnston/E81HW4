@@ -63,7 +63,7 @@ class Baseline:
         # After training we'll also store the test predicitons
         self.test_preds = None
 
-        self.epocs = {}
+        self.epochs = {}
 
     # FLAGS = tf.app.flags.FLAGS
     #
@@ -147,7 +147,7 @@ class Baseline:
                     else:
                         valid_accuracy = 0
 
-                    self.epocs[batch] = EpochValue(batch, train_accuracy, valid_accuracy, l)
+                    self.epochs[batch] = EpochValue(batch, train_accuracy, valid_accuracy, l)
 
             accuracy = self.accuracy(self.test_prediction.eval(), self._ds.test_labels)
             self.params['accuracy'] = accuracy
