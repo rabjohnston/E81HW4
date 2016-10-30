@@ -15,7 +15,7 @@ from baseline_nn import Baseline_nn
 from baseline_cnn import Baseline_cnn
 from baseline_axn import Baseline_axn
 from baseline_axn2 import Baseline_axn2
-
+from baseline_lr import Baseline_lr
 
 def run(model, iteration, num_batches=50000):
 
@@ -342,6 +342,20 @@ def runAXN2s():
     # axn.create(AdadeltaParams())
     # run(axn, 3, num_batches=50000)
 
+def runLR():
+
+    start = time.time()
+    lr = Baseline_lr()
+    lr.create()
+
+    timeCompleted = round((time.time() - start) / 60, 2)
+    print("Completed in {} minutes".format(timeCompleted))
+    lr.params['time'] = timeCompleted
+
+    base_filename = 'saved_lr_000'
+    np.save('{}.preds'.format(base_filename), lr.test_preds)
+    pickle.dump(lr.params, open('{}.params'.format(base_filename), 'wb'))
+
 
 def main():
     # Visualise the data for one image
@@ -354,10 +368,12 @@ def main():
 
     #runAXNs()
 
-    runAXN2s()
+    #runAXN2s()
 
     #runSplitAXNs()
     #runSplitCNNs()
+
+    runLR()
 
     print('Finished')
 
