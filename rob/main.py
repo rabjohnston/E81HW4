@@ -46,7 +46,7 @@ def run(model, iteration, num_batches=50000):
 def searchForNNParams(ds, num_epochs=30000):
 
     # Define Hyper-parameters
-    batch_sizes = { 64, 128, 256, 128, 256 }
+    batch_sizes = { 64, 128, 256 }
     hidden_nodes = {512, 1024, 2048, 4096}
     lamb_regs = {0.005, 0.01, 0.05}
 
