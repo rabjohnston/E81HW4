@@ -34,13 +34,11 @@ class Baseline_nn(Baseline):
         initial = tf.zeros(shape)
         return tf.Variable(initial)
 
-    def create(self, batch_size = 256, hidden_nodes = 1024, lamb_reg=0.01, start_learning_rate = 0.1):
+    def create(self, batch_size = 128, hidden_nodes = 1024, lamb_reg=0.01, start_learning_rate = 0.01):
 
         # Save the hyper params for later
         self.params = {'batch_size':batch_size, 'hidden_nodes':hidden_nodes, 'lamb_reg':lamb_reg,
                        'start_learning_rate':start_learning_rate }
-        print('Parameters: ', self.params);
-
         self._batch_size = batch_size
 
         print('Parameters: batch_size: {}, hidden_nodes: {}, lamb_reg: {}, start_learning_rate: {}'

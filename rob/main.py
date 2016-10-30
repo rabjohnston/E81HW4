@@ -35,7 +35,7 @@ def run(model, iteration, num_batches=50000):
         np.save('{}.preds'.format(base_filename), model.test_preds)
         pickle.dump(model.params, open('{}.params'.format(base_filename), 'wb'))
         pickle.dump(model.optimizer_params, open('{}.opt'.format(base_filename), 'wb'))
-        pickle.dump(model.epochs, open('{}.epochs'.format(base_filename), 'wb'))
+        pickle.dump(model.epocs, open('{}.epocs'.format(base_filename), 'wb'))
     except:
         e = sys.exc_info()[0]
         print('Exception encountered: ', e)
@@ -178,12 +178,12 @@ def runNNs():
     flatDataSet.load()
 
     # Baseline Neural Network
-    #nn = Baseline_nn(flatDataSet)
-    #nn.create()
-    #run(nn, 0, num_epochs=50000)
+    nn = Baseline_nn(flatDataSet)
+    nn.create()
+    run(nn, 0, num_batches=40000)
 
     # Search for parameters
-    searchForNNParams(flatDataSet)
+    #searchForNNParams(flatDataSet)
 
 
 def runCNNs():
@@ -239,14 +239,14 @@ def main():
     # Visualise the data for one image
     # d.display(40000)
 
-    #runNNs()
+    runNNs()
 
     #
     #runCNNs()
 
     #runAXNs()
 
-    runAXN2s()
+    #runAXN2s()
 
 
 

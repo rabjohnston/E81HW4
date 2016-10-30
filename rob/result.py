@@ -2,18 +2,23 @@
 import pickle
 import numpy as np
 
-class Result():
+
+class Result:
     """
     Wrapper to hold a result from a run
     """
 
     def __init__(self):
+
         self.test_preds = None
 
         # A dict of the hyper-parameters and their values
         self.params = None
 
         self.optimizer_params = None
+
+        self.epochs = None
+
 
     def unpickle(self, file):
         """
@@ -39,6 +44,7 @@ class Result():
         np.load('{}.preds.npy'.format(base_filename), self.test_preds)
         self.params = self.unpickle( '{}.params'.format(base_filename))
         self.optimizer_params = self.unpickle('{}.opt'.format(base_filename))
+        self.epochs = self.unpickle('{}.epocs'.format(base_filename))
         print('Params: ', self.params)
 
 
