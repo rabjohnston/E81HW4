@@ -46,7 +46,7 @@ class Baseline_lr:
         Xtest = datadictT[b"data"]  # b prefix is for bytes string literal.
         Ytest = datadictT[b'labels']
 
-        # convert pixel values to a numpy array of floats, normalized to be between 0 and 1
+        # convert pixel values to a numpy array of floats and normalize it
         unshaped_floats1 = np.array(X1, dtype=float) / 255.0 - 0.5
         unshaped_floats2 = np.array(X2, dtype=float) / 255.0 - 0.5
         unshaped_floats3 = np.array(X3, dtype=float) / 255.0 - 0.5
