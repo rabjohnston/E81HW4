@@ -11,7 +11,7 @@ class Baseline_lr:
         self.params = {}
         self.test_preds = None
 
-    def load(self, use_train = False):
+    def load(self, use_valid = False):
         f1 = open('cifar-10-batches-py/data_batch_1', 'rb')
         f2 = open('cifar-10-batches-py/data_batch_2', 'rb')
         f3 = open('cifar-10-batches-py/data_batch_3', 'rb')
@@ -62,7 +62,7 @@ class Baseline_lr:
         test_labels = np.hstack((Ytest))
 
 
-        if use_train:
+        if use_valid:
             train_dataset, valid_dataset, train_labels, valid_labels = \
                 train_test_split(train_dataset, train_labels, test_size=.25, random_state=10)
 
@@ -83,12 +83,11 @@ class Baseline_lr:
         return X_train, y_train, X_valid, y_valid, X_test, y_test
 
 
-    def create(self, X_train, y_train, X_test, y_test, X_valid, y_valid):
+    def create(self, X_train, y_train, X_valid, y_valid, X_test, y_test):
         clf_LR = LogisticRegression(C=0.01, n_jobs=-1).fit(X_train, y_train)
 
         if X_valid is not None:
             print("Validation accuracy:", clf_LR.score(X_valid, y_valid))
-
 
         print("Test accuracy:", clf_LR.score(X_test, y_test))
 

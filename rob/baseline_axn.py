@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import tensorflow as tf
-import gc
 from dataset import DataSet
 from optimizer_params import *
 from baseline import Baseline
 
+
 class Baseline_axn(Baseline):
+    """
+    A simple AlexNet CNN based on section notebook
+    """
 
     def __init__(self, ds):
         Baseline.__init__(self,ds, 'AXN')
@@ -13,11 +16,17 @@ class Baseline_axn(Baseline):
         self.optimizer_params = None
 
     def weight_variable(self, shape):
+        """
+        Create a tensorflow variable for weight
+        """
         initial = tf.truncated_normal(shape, stddev=0.01)
         print('initial ', initial)
         return tf.Variable(initial)
 
     def bias_variable(self, shape):
+        """
+        Create a tensorflow variable for bias
+        """
         initial = tf.constant(0.1, shape=shape)
         return tf.Variable(initial)
 
@@ -28,14 +37,29 @@ class Baseline_axn(Baseline):
                l1filter = 1,
                l2filter = 1,
                l3filter = 1):
+        """
+        Create the model
+        :param optimizer_params: Hyper-parameters for the optimizer
+        :param batch_size: the size of the batch
+        :param lamb_reg: lamdda regularization parameter
+        :param padding: the padding type used in the convolution (conv2d)
+        :param stride: the stride parameter used in pooling
+        :param l1filter: l1 filter
+        :param l2filter: l2 filter
+        :param l3filter: l3 filter
+        :return:
+        """
 
+        # Remember the parameters
         self.params = {'batch_size': batch_size, 'lamb_reg': lamb_reg, 'padding' : padding, 'stride':stride,
                        'l1filter':l1filter, 'l2filter':l2filter, 'l3filter':l3filter }
         print('Parameters: ', self.params);
 
+        # Remember the optimizer parameters
         self.optimizer_params = optimizer_params;
         print('Optimizer Parameters: ', self.optimizer_params.to_string());
 
+        # Remember the batch size
         self._batch_size = batch_size
 
         num_labels = 10
@@ -133,6 +157,8 @@ class Baseline_axn(Baseline):
                 with tf.device('/cpu:0'): # Comment this out if you have a GPU > 8Gb
                     self.valid_prediction = tf.nn.softmax(model(self.tf_valid_dataset, 1.0))
 
+            # Run the test prediction on the CPU. This will keep the GPU memory under 8Gb
+            # and doesn't affect the performance by much as it's only performed once at the end.
             with tf.device('/cpu:0'):
                 self.test_prediction = tf.nn.softmax(model(self.tf_test_dataset, 1.0))
 

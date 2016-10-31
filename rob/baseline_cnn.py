@@ -89,6 +89,8 @@ class Baseline_cnn(Baseline):
             # Predictions for the training, validation, and test data.
             self.train_prediction = tf.nn.softmax(logits)
 
+            # Run the test prediction on the CPU. This will keep the GPU memory under 8Gb
+            # and doesn't affect the performance by much as it's only performed once at the end.
             with tf.device('/cpu:0'):
                 if self._use_valid:
                     self.valid_prediction = tf.nn.softmax(model(self.tf_valid_dataset, 1.0))

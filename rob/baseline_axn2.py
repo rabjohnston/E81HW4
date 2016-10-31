@@ -218,5 +218,7 @@ class Baseline_axn2(Baseline):
                 with tf.device('/cpu:0'): # Comment this out if you have a GPU > 8Gb
                     self.valid_prediction = tf.nn.softmax(model(self.tf_valid_dataset))
 
+            # Run the test prediction on the CPU. This will keep the GPU memory under 8Gb
+            # and doesn't affect the performance by much as it's only performed once at the end.
             with tf.device('/cpu:0'):
                 self.test_prediction = tf.nn.softmax(model(self.tf_test_dataset))

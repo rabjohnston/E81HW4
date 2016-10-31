@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-
 import tensorflow as tf
-
 from dataset import DataSet
 from baseline import Baseline
 

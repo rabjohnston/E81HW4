@@ -370,12 +370,16 @@ def runSplitLR():
     spl = SplitDataset2()
     spl.load(X_train, y_train)
 
+    print('LR on dataset A')
     runSingleLR(lr, spl.a_dataset, spl.a_labels, X_valid, y_valid, X_test, y_test, iteration = 1)
 
+    print('LR on dataset AB')
     runSingleLR(lr, spl.ab_dataset, spl.ab_labels, X_valid, y_valid, X_test, y_test, iteration=2)
 
+    print('LR on dataset ABC')
     runSingleLR(lr, spl.abc_dataset, spl.abc_labels, X_valid, y_valid, X_test, y_test, iteration=3)
 
+    print('LR on dataset ABCD')
     runSingleLR(lr, spl.abcd_dataset, spl.abcd_labels, X_valid, y_valid, X_test, y_test, iteration=4)
 
 
@@ -390,14 +394,14 @@ def main():
 
     #runAXNs()
 
-    runAXN2s()
+    #runAXN2s()
 
     #runSplitAXNs()
     #runSplitCNNs()
 
     #runLR()
 
-    #runSplitLR()
+    runSplitLR()
 
     print('Finished')
 
