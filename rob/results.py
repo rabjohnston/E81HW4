@@ -47,7 +47,7 @@ class Results():
 
     def first(self):
         return self._results[0]
-    
+
     def get_test_pred(self, results, param):
         tp = {}
         for result in results:

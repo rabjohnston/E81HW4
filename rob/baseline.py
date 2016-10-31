@@ -5,7 +5,7 @@ import tensorflow as tf
 import numpy as np
 
 
-class BatchValue:
+class EpochValue:
     """
     Holds a snapshot view of the accuracy and loss at specific position in training
     """
@@ -127,7 +127,7 @@ class Baseline:
                     else:
                         valid_accuracy = 0
 
-                    self.epochs[batch] = BatchValue(batch, train_accuracy, valid_accuracy, l)
+                    self.epochs[batch] = EpochValue(batch, train_accuracy, valid_accuracy, l)
 
             # Evaluation the model against the test data set
             eval = self.test_prediction.eval()
