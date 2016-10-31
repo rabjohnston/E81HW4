@@ -308,7 +308,7 @@ def runSplitAXNs():
 def runAXN2s():
 
     shapedDataSet = DataSet(use_valid=False)
-    shapedDataSet.load(False, centre=True )
+    shapedDataSet.load(False )
 
     # Baseline CNN
     #axn2 = Baseline_axn2(shapedDataSet)
@@ -382,6 +382,18 @@ def runSplitLR():
     print('LR on dataset ABCD')
     runSingleLR(lr, spl.abcd_dataset, spl.abcd_labels, X_valid, y_valid, X_test, y_test, iteration=4)
 
+def runBigAXN2():
+    shapedDataSet = DataSet(use_valid=False)
+    shapedDataSet.load(False )
+
+    axn2 = Baseline_axn2(shapedDataSet)
+
+    # Keep batch_size at 128 - it's half the time of 256
+    axn2.create(optimizer_params=AdagradParams(learning_rate=0.001,
+                                               initial_accumulator_value=0.01))
+    # Run this half a million times
+    run(axn2, 999, 500000)
+
 
 def main():
     # Visualise the data for one image
@@ -401,7 +413,9 @@ def main():
 
     #runLR()
 
-    runSplitLR()
+    #runSplitLR()
+
+    runBigAXN2()
 
     print('Finished')
 
