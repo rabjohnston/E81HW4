@@ -84,14 +84,18 @@ class Baseline_lr:
 
 
     def create(self, X_train, y_train, X_valid, y_valid, X_test, y_test):
-        clf_LR = LogisticRegression(C=0.01, n_jobs=-1).fit(X_train, y_train)
+        clf = LogisticRegression(C=0.01, n_jobs=-1).fit(X_train, y_train)
+        
+        # Code for KNN classifier to replace the above one for Logistic Regression:
+        #clf = KNeighborsClassifier(n_neighbors=10, weights='distance', n_jobs=-1).fit(X_train, y_train)
 
         if X_valid is not None:
-            print("Validation accuracy:", clf_LR.score(X_valid, y_valid))
+            print("Validation accuracy:", clf.score(X_valid, y_valid))
 
-        print("Test accuracy:", clf_LR.score(X_test, y_test))
+        print("Test accuracy:", clf.score(X_test, y_test))
 
-        self.params['accuracy'] = clf_LR.score(X_test, y_test)
-        self.test_preds = clf_LR.predict_proba(X_test)
+        self.params['accuracy'] = clf.score(X_test, y_test)
+        self.test_preds = clf.predict_proba(X_test)
+
 
 
