@@ -5,6 +5,8 @@ from six.moves import cPickle
 from sklearn.cross_validation import train_test_split
 
 from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.decomposition import PCA
 
 class Baseline_lr:
     def __init__(self):
