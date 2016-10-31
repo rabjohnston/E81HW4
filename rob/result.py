@@ -19,6 +19,8 @@ class Result:
 
         self.epochs = None
 
+        self.base_filename = None
+
 
     def unpickle(self, file):
         """
@@ -39,7 +41,7 @@ class Result:
         :return: Nothing
         """
 
-        #print('Loading: ', base_filename)
+        self.base_filename = base_filename
 
         self.test_preds = np.load('{}.preds.npy'.format(base_filename))
         self.params = self.unpickle( '{}.params'.format(base_filename))
@@ -48,14 +50,14 @@ class Result:
             self.optimizer_params = self.unpickle('{}.opt'.format(base_filename))
         except:
             # There'll be no files for non-NNs
-            print("No opt params loaded")
+            #print("No opt params loaded")
             self.optimizer_params = None
 
         try:
             self.epochs = self.unpickle('{}.epochs'.format(base_filename))
         except:
             # There'll be no files for non-NNs
-            print("No epochs loaded")           
+            #print("No epochs loaded")
             self.epochs = None
 
 

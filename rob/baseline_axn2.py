@@ -6,7 +6,9 @@ from dataset import DataSet
 from baseline import Baseline
 
 class Baseline_axn2(Baseline):
-
+    """
+    More advanced CNN based on https://www.tensorflow.org/versions/r0.11/tutorials/deep_cnn/index.html
+    """
     def __init__(self, ds):
         Baseline.__init__(self,ds, 'AXN2')
 
