@@ -151,6 +151,13 @@ class DataSet():
         data = self.normalise(data)
         data = self.reformat(data, flatten)
 
+        # Code for QUESITON 5) - Image distortion
+        # use one of the 3 disstortions bellow for each of the runs 
+        # implementation of 3 ways instead of 1 for Exploratory Points
+        #data = np.array([np.rot90(img) for img in data])        
+        #data = np.array([np.fliplr(img) for img in data]) 
+        #data = np.array([np.flipud(img) for img in data]) 
+
         self.test_dataset = data.astype(np.float32)
 
 
