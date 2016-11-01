@@ -160,9 +160,9 @@ class DataSet():
         ## data = data.transpose([0, 2, 3, 1])
 
         # Use 1 of out the 3 different disstortions bellow for each of the runs 
-        #data = np.array([np.rot90(img) for img in data])        
-        #data = np.array([np.fliplr(img) for img in data]) 
-        #data = np.array([np.flipud(img) for img in data])
+        # data = np.array([np.rot90(img) for img in data])        
+        # data = np.array([np.fliplr(img) for img in data]) 
+        # data = np.array([np.flipud(img) for img in data])
 
         ## Next 2 lines of code  are used only for NN classifiers but not for CNN classifiers
         ## data = data.transpose([0, 3, 1, 2])
