@@ -151,13 +151,24 @@ class DataSet():
         data = self.normalise(data)
         data = self.reformat(data, flatten)
 
-        # Code for QUESITON 5) - Image distortion
-        # use one of the 3 disstortions bellow for each of the runs 
-        # implementation of 3 ways instead of 1 for Exploratory Points
-        #data = data.astype(np.float32)
+######### Code for QUESTION 5) - Image distortion ###########
+
+        # data = data.astype(np.float32)
+        
+        ## Next 2 lines of code  are used only for NN classifiers but not for CNN classifiers
+        ## data = data.reshape([-1, 3, 32, 32])
+        ## data = data.transpose([0, 2, 3, 1])
+
+        # Use 1 of out the 3 different disstortions bellow for each of the runs 
         #data = np.array([np.rot90(img) for img in data])        
         #data = np.array([np.fliplr(img) for img in data]) 
-        #data = np.array([np.flipud(img) for img in data]) 
+        #data = np.array([np.flipud(img) for img in data])
+
+        ## Next 2 lines of code  are used only for NN classifiers but not for CNN classifiers
+        ## data = data.transpose([0, 3, 1, 2])
+        ## data = data.reshape((-1, 32 * 32 * 3)).astype(np.float32)
+
+######### End of code for QUESTION 5) - Image distortion ###########
 
         self.test_dataset = data.astype(np.float32)
 
